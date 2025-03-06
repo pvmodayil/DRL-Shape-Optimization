@@ -1,6 +1,15 @@
 #include <iostream>
+#include <format>
+#include <string>
+#include <utility>
+#include <cassert>
 #include <vector>
 
+/*
+*******************************************************
+*            Necessary Conditons Chheck               *
+*******************************************************
+*/
 bool isMonotonicallyDecreasing(const std::vector<double>& g){
     // Check if the vector has less than 2 elements
     if (g.size() < 2) {
@@ -38,3 +47,33 @@ bool isConvex(const std::vector<double>& g) {
 
     return true; // All checks passed, so it is convex
 }
+
+/*
+*******************************************************
+*            Potential & Potential Coeffs             *
+*******************************************************
+*/
+void filterVectors(double hw_micrstr, 
+                    double hw_arra, 
+                    const std::vector<double>& g, 
+                    const std::vector<double>& x,
+                    std::vector<double>& filtered_x,
+                    std::vector<double>& filtered_g){
+    std::cout<<"Input vectors are being filtered\n";
+    
+    // Assuming that both x and g have the same dimensions
+    std::string error_message = std::format("Dimensions of x-axis vector and g-points vector do not match!");
+    assert((error_message, g.size() == x.size()));
+
+    // Create clear and add to the filtered vectors what is required
+    filtered_g.clear();
+    filtered_x.clear();
+    for(size_t idx=0; idx<x.size(); ++idx){
+        if(x[idx] > hw_micrstr && x[idx] < hw_arra){
+            filtered_x.push_back(x[idx]);
+            filtered_g.push_back(g[idx]);
+        }
+    }
+}
+
+//std::tie(filtered_g, filtered_x), std::pair<std::vector<double>, std::vector<double>> {filtered_g,filtered_x}
