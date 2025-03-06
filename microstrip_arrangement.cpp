@@ -8,8 +8,8 @@ bool isMonotonicallyDecreasing(const std::vector<double>& g){
     }
 
     // Iterate through the array and check if each element is greater than the next one
-    for (size_t i = 1; i < g.size(); ++i) {
-        if (g[i] >= g[i - 1]) {
+    for (size_t idx = 1; idx < g.size(); ++idx) {
+        if (g[idx] >= g[idx - 1]) {
             return false; // Found an instance where the order is not decreasing
         }
     }
@@ -25,8 +25,8 @@ bool isConvex(const std::vector<double>& g) {
 
     // Calculate the second differences
     std::vector<double> dx2(g.size() - 2);
-    for (size_t i = 1; i < g.size() - 1; ++i) {
-        dx2[i - 1] = g[i + 1] - 2 * g[i] + g[i - 1];
+    for (size_t idx = 1; idx < g.size() - 1; ++idx) {
+        dx2[idx - 1] = g[idx + 1] - 2 * g[idx] + g[idx - 1];
     }
 
     // Check if all second differences are non-negative
