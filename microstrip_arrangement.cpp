@@ -3,6 +3,7 @@
 #include <string>
 #include <utility>
 #include <cassert>
+#include <stdexcept>
 #include <vector>
 
 /*
@@ -53,17 +54,18 @@ bool isConvex(const std::vector<double>& g) {
 *            Potential & Potential Coeffs             *
 *******************************************************
 */
+// Filter Vectors to be within dimensions
 void filterVectors(double hw_micrstr, 
                     double hw_arra, 
-                    const std::vector<double>& g, 
-                    const std::vector<double>& x,
+                    std::vector<double> g, 
+                    std::vector<double> x,
                     std::vector<double>& filtered_x,
                     std::vector<double>& filtered_g){
     std::cout<<"Input vectors are being filtered\n";
     
     // Assuming that both x and g have the same dimensions
     std::string error_message = std::format("Dimensions of x-axis vector and g-points vector do not match!");
-    assert((error_message, g.size() == x.size()));
+    assert((std::format("Dimensions of x-axis vector and g-point vector do not match!g: {}, x: {}",g.size(),x.size()), g.size() == x.size()));
 
     // Create clear and add to the filtered vectors what is required
     filtered_g.clear();
@@ -77,3 +79,23 @@ void filterVectors(double hw_micrstr,
 }
 
 //std::tie(filtered_g, filtered_x), std::pair<std::vector<double>, std::vector<double>> {filtered_g,filtered_x}
+
+// Calculate the potential coefficients
+std::vector<double> calculatePotentialCoeffs(double V0,
+                                    double hw_micrstr, 
+                                    double hw_arra, 
+                                    int num_fs, 
+                                    std::vector<double> g, 
+                                    std::vector<double> x){
+                                    
+    if(g.size() != x.size()){
+        throw std::runtime_error(std::format("Dimensions of x-axis vector and g-point vector do not match!g: {}, x: {}",g.size(),x.size()));
+    }
+
+    if(x[0] <= hw_micrstr || x[x.size() - 1] >= hw_arra){
+        // first pair of g,x are passed as value and the second is passed as reference so the original vectors itself will be filtered
+        filterVectors(hw_micrstr,hw_arra,g,x,g,x);
+    }
+
+    
+}
