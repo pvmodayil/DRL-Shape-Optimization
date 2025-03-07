@@ -162,15 +162,27 @@ Eigen::ArrayXd calculatePotential(const double hw_arra,
                                     const int num_fs, 
                                     Eigen::ArrayXd& vn, 
                                     std::vector<double>& x){
-    // Create fourier coefficients
-    Eigen::MatrixXd n_t = (Eigen::ArrayXd::LinSpaced(num_fs, 0, num_fs - 1)); // Nx1
 
-    // Convert the x and g vectors to arrays
-    Eigen::ArrayXd x_array = Eigen::Map<const Eigen::ArrayXd>(x.data(), x.size()); // mx1
-
-    Eigen::ArrayXd cos1 = ((2*n_t.array() + 1) * x_array * PI / (2 * hw_arra)).cos(); // Nxm
+    assert(vn.rows() != 0 && "Potenntial coefficients vn is empty"); // && message is a trick to print message in assert as the assert checks failure of conditons                                    
     
-    Eigen::ArrayXd VF = vn*cos1; // 1xN * Nxm = 1xm
+    // Create the Fourier coefficients
+    Eigen::ArrayXd n = Eigen::ArrayXd::LinSpaced(num_fs, 0, num_fs - 1); // Nx1
+
+    // Convert the x vector to a MatrixXd (Mxm)
+    Eigen::MatrixXd x_matrix = Eigen::Map<const Eigen::MatrixXd>(x.data(), 1, x.size()); // 1xM
+
+    // Calculate cosines: NxM => the final .array() will make it an array type
+    Eigen::ArrayXd cos1 = (((2 * n + 1) * (PI / (2 * hw_arra))).matrix() * x_matrix).array().cos(); // 
+
+    // Multiply vn with cos1; vn should be a column vector for proper broadcasting
+    // Expected dimension of vn is 1xN but verify it
+    if(vn.rows() > 1){
+        // vn is a column vector, convert it to row vector and calculate
+        Eigen::ArrayXd VF = (vn.transpose().matrix() * cos1.matrix()).array(); // 1xN * NxM = 1xM
+        return VF;
+    }
+
+    Eigen::ArrayXd VF = (vn.matrix() * cos1.matrix()).array(); // 1xN * NxM = 1xM
 
     return VF;
 }
