@@ -54,6 +54,8 @@
         "fstream": "cpp",
         "optional": "cpp",
         "random": "cpp",
-        "sstream": "cpp"
+        "sstream": "cpp",
+        "numbers": "cpp",
+        "numeric": "cpp"
     }
 }

@@ -2,6 +2,9 @@
 #include <tuple>
 #include <format>
 #include <string>
+#include <algorithm>
+#include <numeric>
+#include <numbers>
 #include <utility>
 #include <cassert>
 #include <stdexcept>
@@ -88,7 +91,13 @@ std::vector<double> calculatePotentialCoeffs(double V0,
                                     int num_fs, 
                                     std::vector<double> g, 
                                     std::vector<double> x){
-                                    
+    // Set m as the size of the input vectors
+    size_t m = x.size();
+    
+    if(m == 1){
+        throw std::runtime_error("Not enough spline knots, at least two points are required between half width of microstrip and half width of arrangement!");
+    }
+    
     if(g.size() != x.size()){
         throw std::runtime_error(std::format("Dimensions of x-axis vector and g-point vector do not match!g: {}, x: {}",g.size(),x.size()));
     }
@@ -98,5 +107,19 @@ std::vector<double> calculatePotentialCoeffs(double V0,
         filterVectors(hw_micrstr,hw_arra,g,x,g,x);
     }
 
+    // Create a vector of Fourier coefficients called n
+    std::vector<int> n(num_fs);
+    std::iota(n.begin(), n.end(), 0); // Fill the vector with 0,1,....,num_fs-1
     
+
+    // For the next steps it is a must that the vectors are in the correct order
+    if (!std::is_sorted(x.begin(), x.end())) {
+        throw std::runtime_error("Input x-axis values are not sorted.");
+    }
+
+    // Calculate the potential coefficients
+    if(m==2){ // Case when m is two
+        double outer_coeff = (2 / hw_arra) * V0 * (1 / pow((2 * n[1] + 1)*std::numbers::pi / (2 *hw_arra),2));
+    }
+
 }
