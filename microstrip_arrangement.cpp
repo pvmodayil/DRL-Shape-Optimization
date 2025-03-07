@@ -67,23 +67,25 @@ bool isConvex(const std::vector<double>& g) {
 // Filter Vectors to be within dimensions
 void filterVectors(double hw_micrstr, 
                     double hw_arra, 
-                    const std::vector<double> g, 
-                    const std::vector<double> x,
+                    const std::vector<double> original_g, 
+                    const std::vector<double> original_x,
                     std::vector<double>& filtered_x,
                     std::vector<double>& filtered_g){
     std::cout<<"Input vectors are being filtered\n";
     
     // Assuming that both x and g have the same dimensions
     std::string error_message = std::format("Dimensions of x-axis vector and g-points vector do not match!");
-    assert((std::format("Dimensions of x-axis vector and g-point vector do not match!g: {}, x: {}",g.size(),x.size()), g.size() == x.size()));
+    assert((std::format("Dimensions of x-axis vector and g-point vector do not match!g: {}, x: {}",
+            original_g.size(),original_x.size()), 
+                original_g.size() == original_x.size()));
 
     // Create clear and add to the filtered vectors what is required
     filtered_g.clear();
     filtered_x.clear();
-    for(size_t idx=0; idx<x.size(); ++idx){
-        if(x[idx] > hw_micrstr && x[idx] < hw_arra){
-            filtered_x.push_back(x[idx]);
-            filtered_g.push_back(g[idx]);
+    for(size_t idx=0; idx<original_x.size(); ++idx){
+        if(original_x[idx] > hw_micrstr && original_x[idx] < hw_arra){
+            filtered_x.push_back(original_x[idx]);
+            filtered_g.push_back(original_g[idx]);
         }
     }
 }
@@ -97,21 +99,19 @@ Eigen::ArrayXd calculatePotentialCoeffs(double V0,
                                     int num_fs, 
                                     std::vector<double> g, 
                                     std::vector<double> x){
-    // Set m as the size of the input vectors
-    size_t m = x.size();
-    
-    if(m == 1){
-        throw std::runtime_error("Not enough spline knots, at least two points are required between half width of microstrip and half width of arrangement!");
-    }
-    
-    if(g.size() != x.size()){
-        throw std::runtime_error(std::format("Dimensions of x-axis vector and g-point vector do not match!g: {}, x: {}",g.size(),x.size()));
-    }
 
+    // Check if the values passed are within the allowed range else filter
     if(x[0] <= hw_micrstr || x.back() >= hw_arra){
         // first pair of g,x are passed as value and the second is passed as reference so the original vectors itself will be filtered
         filterVectors(hw_micrstr,hw_arra,g,x,g,x);
     }
+    
+    // Set m as the size of the input vectors after filtering if required
+    size_t m = x.size();
+    
+    // Assert the requirements
+    assert(("Not enough spline knots, at least two points are required between half width of microstrip and half width of arrangement!", m > 1));
+    assert((std::format("Dimensions of x-axis vector and g-point vector do not match!g: {}, x: {}",g.size(),x.size()), g.size() == x.size()));
 
     // For the next steps it is a must that the vectors are in the correct order
     if (!std::is_sorted(x.begin(), x.end())) {
