@@ -120,7 +120,7 @@ Eigen::ArrayXd calculatePotentialCoeffs(const double V0,
 
     // Calculate the potential coefficients
     // Create a array of Fourier coefficients
-    Eigen::ArrayXd n = Eigen::ArrayXd::LinSpaced(num_fs, 0, num_fs - 1); // Create an array from 0 to num_fs-1
+    Eigen::ArrayXd n = Eigen::ArrayXd::LinSpaced(num_fs, 0, num_fs - 1); // Nx1
 
     
     Eigen::ArrayXd outer_coeff = (2.0/hw_arra)*V0*(1.0 / ((2 * n + 1) * PI / (2.0 * hw_arra)).square());
@@ -158,13 +158,19 @@ Eigen::ArrayXd calculatePotentialCoeffs(const double V0,
     return vn;
 }
 
-std::vector<double> calculatePotential(const double hw_arra, 
+Eigen::ArrayXd calculatePotential(const double hw_arra, 
                                     const int num_fs, 
                                     Eigen::ArrayXd& vn, 
                                     std::vector<double>& x){
     // Create fourier coefficients
-    Eigen::ArrayXd n = Eigen::ArrayXd::LinSpaced(num_fs, 0, num_fs - 1); // Create an array from 0 to num_fs-1
+    Eigen::MatrixXd n_t = (Eigen::ArrayXd::LinSpaced(num_fs, 0, num_fs - 1)); // Nx1
 
+    // Convert the x and g vectors to arrays
+    Eigen::ArrayXd x_array = Eigen::Map<const Eigen::ArrayXd>(x.data(), x.size()); // mx1
 
+    Eigen::ArrayXd cos1 = ((2*n_t.array() + 1) * x_array * PI / (2 * hw_arra)).cos(); // Nxm
     
+    Eigen::ArrayXd VF = vn*cos1; // 1xN * Nxm = 1xm
+
+    return VF;
 }
