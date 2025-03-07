@@ -93,12 +93,12 @@ void filterVectors(double hw_micrstr,
 //std::tie(filtered_g, filtered_x), std::pair<std::vector<double>, std::vector<double>> {filtered_g,filtered_x}
 
 // Calculate the potential coefficients
-Eigen::ArrayXd calculatePotentialCoeffs(double V0,
-                                    double hw_micrstr, 
-                                    double hw_arra, 
-                                    int num_fs, 
-                                    std::vector<double> g, 
-                                    std::vector<double> x){
+Eigen::ArrayXd calculatePotentialCoeffs(const double V0,
+                                    const double hw_micrstr, 
+                                    const double hw_arra, 
+                                    const int num_fs, 
+                                    std::vector<double>& g, 
+                                    std::vector<double>& x){
 
     // Check if the values passed are within the allowed range else filter
     if(x[0] <= hw_micrstr || x.back() >= hw_arra){
@@ -159,4 +159,8 @@ Eigen::ArrayXd calculatePotentialCoeffs(double V0,
     Eigen::ArrayXd vn = outer_coeff*(v_n1+v_n2+v_n3); // 1xN
 
     return vn;
+}
+
+std::vector<double> calculatePotential(double hw_arra, int num_fs, Eigen::ArrayXd vn, std::vector<double> x){
+    
 }
