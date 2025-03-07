@@ -1,4 +1,5 @@
 #include <iostream>
+#include <tuple>
 #include <format>
 #include <string>
 #include <utility>
@@ -57,8 +58,8 @@ bool isConvex(const std::vector<double>& g) {
 // Filter Vectors to be within dimensions
 void filterVectors(double hw_micrstr, 
                     double hw_arra, 
-                    std::vector<double> g, 
-                    std::vector<double> x,
+                    const std::vector<double> g, 
+                    const std::vector<double> x,
                     std::vector<double>& filtered_x,
                     std::vector<double>& filtered_g){
     std::cout<<"Input vectors are being filtered\n";
@@ -92,7 +93,7 @@ std::vector<double> calculatePotentialCoeffs(double V0,
         throw std::runtime_error(std::format("Dimensions of x-axis vector and g-point vector do not match!g: {}, x: {}",g.size(),x.size()));
     }
 
-    if(x[0] <= hw_micrstr || x[x.size() - 1] >= hw_arra){
+    if(x[0] <= hw_micrstr || x.back() >= hw_arra){
         // first pair of g,x are passed as value and the second is passed as reference so the original vectors itself will be filtered
         filterVectors(hw_micrstr,hw_arra,g,x,g,x);
     }
