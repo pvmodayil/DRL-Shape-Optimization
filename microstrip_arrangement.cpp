@@ -10,6 +10,12 @@
 #include <stdexcept>
 #include <vector>
 
+// External Includes
+#include <Eigen/Dense>
+
+// Constants
+constexpr double PI = std::numbers::pi;
+
 /*
 *******************************************************
 *            Necessary Conditons Chheck               *
@@ -85,7 +91,7 @@ void filterVectors(double hw_micrstr,
 //std::tie(filtered_g, filtered_x), std::pair<std::vector<double>, std::vector<double>> {filtered_g,filtered_x}
 
 // Calculate the potential coefficients
-std::vector<double> calculatePotentialCoeffs(double V0,
+Eigen::ArrayXd calculatePotentialCoeffs(double V0,
                                     double hw_micrstr, 
                                     double hw_arra, 
                                     int num_fs, 
@@ -107,19 +113,50 @@ std::vector<double> calculatePotentialCoeffs(double V0,
         filterVectors(hw_micrstr,hw_arra,g,x,g,x);
     }
 
-    // Create a vector of Fourier coefficients called n
-    std::vector<int> n(num_fs);
-    std::iota(n.begin(), n.end(), 0); // Fill the vector with 0,1,....,num_fs-1
-    
-
     // For the next steps it is a must that the vectors are in the correct order
     if (!std::is_sorted(x.begin(), x.end())) {
         throw std::runtime_error("Input x-axis values are not sorted.");
     }
 
     // Calculate the potential coefficients
-    if(m==2){ // Case when m is two
-        double outer_coeff = (2 / hw_arra) * V0 * (1 / pow((2 * n[1] + 1)*std::numbers::pi / (2 *hw_arra),2));
+    // Create a array of Fourier coefficients
+    Eigen::ArrayXd n = Eigen::ArrayXd::LinSpaced(num_fs, 0, num_fs - 1); // Create an array from 0 to num_fs-1
+
+    
+    Eigen::ArrayXd outer_coeff = (2.0/hw_arra)*V0*(1.0 / ((2 * n + 1) * PI / (2.0 * hw_arra)).square());
+    
+    // Calculate v_n1 and v_n3 for all n
+    Eigen::ArrayXd v_n1 = (g[0] - V0) / (x[0] - hw_micrstr) *
+        ((2 * n + 1).cast<double>() * x[0] * PI / (2 * hw_arra)).cos() -
+        ((2 * n.array() + 1).cast<double>() * hw_micrstr * PI / (2 * hw_arra)).cos();
+
+    Eigen::ArrayXd v_n3 = (g.back()) / (hw_arra - x.back()) *
+        ((2 * n + 1).cast<double>() * x.back() * PI / (2 * hw_arra)).cos();
+
+    // Reshape x into a column vector (m x 1)
+    Eigen::MatrixXd x_t(m, 1);
+    for (size_t i = 0; i < m; ++i) {
+        x_t(i, 0) = x[i];
     }
 
+    // Convert the x and g vectors to arrays
+    Eigen::ArrayXd x_array = Eigen::Map<const Eigen::ArrayXd>(x.data(), x.size());
+    Eigen::ArrayXd g_array = Eigen::Map<const Eigen::ArrayXd>(g.data(), g.size());
+
+    // Calculate cos1 and cos2
+    // Xi => last m-1 values
+    Eigen::ArrayXd cos1 = (x_t.bottomRows(m - 1).array() * PI / (2 * hw_arra) * (2 * n + 1)).cos(); // m-1x1 * 1xN = m-1xN
+    // Xi-1 => first m-1 values
+    Eigen::ArrayXd cos2 = (x_t.topRows(m - 1).array() * PI / (2 * hw_arra) * (2 * n + 1)).cos(); // m-1x1 * 1xN = m-1xN
+
+    // Calculate fac1: g[1:m] - g[0:m-1]     
+    Eigen::ArrayXd fac1 = (g_array.segment(1, m-1) - g_array.segment(0, m-1)) /
+                        (x_array.segment(1, m-1) - x_array.segment(0, m-1)); // 1xm-1
+
+    // Calculate v_n2: fac1 multiplied by the difference of cosines
+    Eigen::ArrayXd v_n2 = fac1 * (cos1 - cos2); // 1xm-1 * m-1xN = 1xN
+
+    Eigen::ArrayXd vn = outer_coeff*(v_n1+v_n2+v_n3); // 1xN
+
+    return vn;
 }
