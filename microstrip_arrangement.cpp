@@ -133,15 +133,12 @@ Eigen::ArrayXd calculatePotentialCoeffs(const double V0,
     Eigen::ArrayXd v_n3 = (g.back()) / (hw_arra - x.back()) *
         ((2 * n + 1).cast<double>() * x.back() * PI / (2 * hw_arra)).cos();
 
-    // Reshape x into a column vector (m x 1)
-    Eigen::MatrixXd x_t(m, 1);
-    for (size_t i = 0; i < m; ++i) {
-        x_t(i, 0) = x[i];
-    }
-
     // Convert the x and g vectors to arrays
     Eigen::ArrayXd x_array = Eigen::Map<const Eigen::ArrayXd>(x.data(), x.size());
     Eigen::ArrayXd g_array = Eigen::Map<const Eigen::ArrayXd>(g.data(), g.size());
+
+    // Reshape x into a column vector (m x 1)
+    Eigen::MatrixXd x_t = x_array.transpose();
 
     // Calculate cos1 and cos2
     // Xi => last m-1 values
@@ -161,6 +158,13 @@ Eigen::ArrayXd calculatePotentialCoeffs(const double V0,
     return vn;
 }
 
-std::vector<double> calculatePotential(double hw_arra, int num_fs, Eigen::ArrayXd vn, std::vector<double> x){
+std::vector<double> calculatePotential(const double hw_arra, 
+                                    const int num_fs, 
+                                    Eigen::ArrayXd& vn, 
+                                    std::vector<double>& x){
+    // Create fourier coefficients
+    Eigen::ArrayXd n = Eigen::ArrayXd::LinSpaced(num_fs, 0, num_fs - 1); // Create an array from 0 to num_fs-1
+
+
     
 }
