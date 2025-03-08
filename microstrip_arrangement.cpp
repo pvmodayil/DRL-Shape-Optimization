@@ -13,6 +13,7 @@
 // Constants
 constexpr double PI = std::numbers::pi;
 
+namespace MSA{
 /*
 *******************************************************
 *            Necessary Conditons Chheck               *
@@ -263,3 +264,5 @@ double calculateEnergy(const double& er1,
 
     return W12;
 }
+
+} // namespace MSA

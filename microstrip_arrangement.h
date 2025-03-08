@@ -11,6 +11,8 @@
 // External Includes
 #include <Eigen/Dense>
 
+namespace MSA{
+
 bool isMonotonicallyDecreasing(const std::vector<double>& g);
 
 bool isConvex(const std::vector<double>& g);
@@ -44,5 +46,7 @@ double calculateEnergy(const double& er1,
     const double& ht_subs,
     const int& N,
     Eigen::ArrayXd& vn);
+
+} // namespace MSA
 
 #endif
