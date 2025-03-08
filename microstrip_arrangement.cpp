@@ -229,3 +229,40 @@ Eigen::ArrayXd logcosh(const Eigen::ArrayXd& vector) {
     // Rescaling and completing the formula
     return (exp_x + exp_neg_x).log() + vector.maxCoeff() - std::log(2);
 }
+
+// Function to calculate the energy of the curve
+double calculateEnergy(const double& er1,
+                    const double& er2,
+                    const double& hw_arra,
+                    const double& ht_arra,
+                    const double& ht_subs,
+                    const int& N,
+                    Eigen::ArrayXd& vn){
+    
+    // Set the constants
+    double e0 = 8.854E-12; // Permittivity constant e0
+    double e1 = er1 * e0;
+    double e2 = er2 * e0;
+
+    // Create a array of Fourier coefficients
+    Eigen::ArrayXd n = (Eigen::ArrayXd::LinSpaced(N, 0, N - 1)); // 1xN
+
+    // Coefficients
+    Eigen::ArrayXd coeff = (2 * n + 1) * PI * vn.square(); // 1xN
+
+    // w1
+    Eigen::ArrayXd logcosh1 = logcosh((2 * n + 1) * PI * (ht_arra - ht_subs) / (2 * hw_arra)); // 1xN
+    Eigen::ArrayXd logsinh1 = logsinh((2 * n + 1) * PI * (ht_arra - ht_subs) / (2 * hw_arra)); // 1xN
+    Eigen::ArrayXd coth1 = (logcosh1 - logsinh1).exp(); // 1xN
+    double w1 = e1 / 4 * coeff.matrix().dot(coth1.matrix());
+
+    // w2
+    Eigen::ArrayXd logcosh2 = logcosh((2 * n + 1) * PI * ht_subs / (2 * hw_arra));
+    Eigen::ArrayXd logsinh2 = logsinh((2 * n + 1) * PI * ht_subs / (2 * hw_arra));
+    Eigen::ArrayXd coth2 = (logcosh2 - logsinh2).exp();
+    double w2 = e2 / 4 * coeff.matrix().dot(coth2.matrix());
+
+    double W12 = w1 + w2;
+
+    return W12;
+}
