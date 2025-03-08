@@ -134,6 +134,20 @@ Eigen::ArrayXd calculatePotentialCoeffs(const double V0,
     Eigen::ArrayXd v_n3 = (g[M]) / (hw_arra - x[M]) *
         ((2 * n + 1) * x[M] * PI / (2 * hw_arra)).cos(); // 1xN
 
+    // Edge case when the input vector is very small
+    if(M == 2){
+        // Calculate cos1 and cos2 (segment takes start index and number of positions including start index to be taken)
+        Eigen::ArrayXd cos1 = ((x[1] * PI / (2 * hw_arra)) * (2 * n + 1)).cos(); // 1xN 
+        // Require values from first element to the second last element (0 to (M-1th))
+        Eigen::ArrayXd cos2 = ((x[0] * PI / (2 * hw_arra)) * (2 * n + 1)).cos(); // 1xN
+
+        Eigen::ArrayXd v_n2 = (g[1]-g[0])/(x[1]-x[0])*(cos1-cos2); // 1xN
+
+        Eigen::ArrayXd vn = outer_coeff*(v_n1+v_n2+v_n3); // 1xN
+
+        return vn;
+    }
+
     // Convert the x and g vectors to arrays
     Eigen::ArrayXd x_array = Eigen::Map<const Eigen::ArrayXd>(x.data(), x.size(), 1); // Mx1
     Eigen::ArrayXd g_array = Eigen::Map<const Eigen::ArrayXd>(g.data(), g.size(), 1); // Mx1
