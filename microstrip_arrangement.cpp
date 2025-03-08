@@ -172,15 +172,15 @@ Eigen::ArrayXd calculatePotentialCoeffs(const double V0,
     return vn;
 }
 
-Eigen::ArrayXd calculatePotential(const double hw_arra, 
-                                    const int num_fs, 
-                                    Eigen::ArrayXd& vn, 
-                                    std::vector<double>& x){
+Eigen::ArrayXd calculatePotential(const double& hw_arra, 
+                                const int& N, 
+                                Eigen::ArrayXd& vn, 
+                                std::vector<double>& x){
 
     assert(vn.rows() != 0 && "Potenntial coefficients vn is empty"); // && message is a trick to print message in assert as the assert checks failure of conditons                                    
     
     // Create the Fourier coefficients
-    Eigen::ArrayXd n = Eigen::ArrayXd::LinSpaced(num_fs, 0, num_fs - 1).transpose(); // Nx1
+    Eigen::ArrayXd n = Eigen::ArrayXd::LinSpaced(N, 0, N - 1).transpose(); // Nx1
 
     // Convert the x vector to a MatrixXd (Mxm)
     Eigen::MatrixXd x_matrix = Eigen::Map<const Eigen::MatrixXd>(x.data(), 1, x.size()); // 1xM
