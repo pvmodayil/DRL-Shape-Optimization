@@ -123,7 +123,7 @@ Eigen::ArrayXd calculatePotentialCoeffs(const double V0,
     // Create a array of Fourier coefficients
     Eigen::ArrayXd n = (Eigen::ArrayXd::LinSpaced(N, 0, N - 1)); // 1xN
 
-    
+    // Calculate outer coefficient
     Eigen::ArrayXd outer_coeff = (2.0/hw_arra)*V0*(1.0 / ((2 * n + 1) * PI / (2.0 * hw_arra)).square()); // 1xN
     
     // Calculate v_n1 and v_n3 for all n
