@@ -1,3 +1,4 @@
+#include "microstrip_arrangement.h"
 #include <iostream>
 #include <format>
 #include <string>
@@ -33,7 +34,7 @@ bool isMonotonicallyDecreasing(const std::vector<double>& g){
     return true; // All checks passed, so it is monotonically decreasing
 }
 
-bool isConvex(const std::vector<double>& g) {
+bool isConvex(const std::vector<double>& g){
     // Check if the vector has at least 3 elements
     if (g.size() < 3) {
         return false; // Not enough points to determine convexity
@@ -203,7 +204,7 @@ Eigen::ArrayXd calculatePotential(const double& hw_arra,
 *******************************************************
 */
 // Function to compute the natural logarithm of the sinh function
-Eigen::ArrayXd logsinh(const Eigen::ArrayXd& vector) {
+Eigen::ArrayXd logsinh(const Eigen::ArrayXd& vector){
     // sinh = (e^x - e^(-x))/2 => ln(sinh(x)) = ln(e^x - e^(-x)) - ln(2)
 
     // Exponential of the values after normalization to avoid overflow
@@ -215,7 +216,7 @@ Eigen::ArrayXd logsinh(const Eigen::ArrayXd& vector) {
 }
 
 // Function to compute the natural logarithm of the cosh function
-Eigen::ArrayXd logcosh(const Eigen::ArrayXd& vector) {
+Eigen::ArrayXd logcosh(const Eigen::ArrayXd& vector){
     // cosh = (e^x + e^(-x))/2 => ln(cosh(x)) = ln(e^x + e^(-x)) - ln(2)
 
     // Exponential of the values after normalization to avoid overflow
