@@ -15,7 +15,7 @@
 
 // Constants
 constexpr double PI = std::numbers::pi;
-
+constexpr double e0 = 8.854E-12;
 /*
 *******************************************************
 *            Necessary Conditons Chheck               *
@@ -200,3 +200,9 @@ Eigen::ArrayXd calculatePotential(const double hw_arra,
 
     return VF;
 }
+
+/*
+*******************************************************
+*                      Energy                         *
+*******************************************************
+*/
