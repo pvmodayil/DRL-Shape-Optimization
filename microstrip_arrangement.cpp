@@ -65,8 +65,8 @@ bool isConvex(const std::vector<double>& g) {
 *******************************************************
 */
 // Filter Vectors to be within dimensions
-void filterVectors(double hw_micrstr, 
-                    double hw_arra, 
+void filterVectors(const double& hw_micrstr, 
+                    const double& hw_arra, 
                     const std::vector<double> original_g, 
                     const std::vector<double> original_x,
                     std::vector<double>& filtered_x,
@@ -93,10 +93,10 @@ void filterVectors(double hw_micrstr,
 //std::tie(filtered_g, filtered_x), std::pair<std::vector<double>, std::vector<double>> {filtered_g,filtered_x}
 
 // Calculate the potential coefficients
-Eigen::ArrayXd calculatePotentialCoeffs(const double V0,
-                                    const double hw_micrstr, 
-                                    const double hw_arra, 
-                                    const int N, 
+Eigen::ArrayXd calculatePotentialCoeffs(const double& V0,
+                                    const double& hw_micrstr, 
+                                    const double& hw_arra, 
+                                    const int& N, 
                                     std::vector<double>& g, 
                                     std::vector<double>& x){
 
