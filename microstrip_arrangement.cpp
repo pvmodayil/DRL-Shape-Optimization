@@ -96,7 +96,7 @@ void filterVectors(double hw_micrstr,
 Eigen::ArrayXd calculatePotentialCoeffs(const double V0,
                                     const double hw_micrstr, 
                                     const double hw_arra, 
-                                    const int num_fs, 
+                                    const int N, 
                                     std::vector<double>& g, 
                                     std::vector<double>& x){
 
@@ -106,54 +106,54 @@ Eigen::ArrayXd calculatePotentialCoeffs(const double V0,
         filterVectors(hw_micrstr,hw_arra,g,x,g,x);
     }
     
-    // Set m as the size of the input vectors after filtering if required
-    size_t m = x.size();
+    // Set M as the size of the input vectors after filtering if required
+    size_t M = x.size();
     
     // Assert the requirements
-    assert(("Not enough spline knots, at least two points are required between half width of microstrip and half width of arrangement!", m > 1));
-    assert((std::format("Dimensions of x-axis vector and g-point vector do not match!g: {}, x: {}",g.size(),x.size()), g.size() == x.size()));
+    assert(M > 1 && "Not enough spline knots, at least two points are required between half width of microstrip and half width of arrangement!");
+    if (g.size() != x.size()) {
+        throw std::invalid_argument(std::format("Dimensions of x-axis vector and g-point vector do not match! g: {}, x: {}", g.size(), x.size()));
+    }
 
     // For the next steps it is a must that the vectors are in the correct order
     if (!std::is_sorted(x.begin(), x.end())) {
         throw std::runtime_error("Input x-axis values are not sorted.");
     }
 
-    // Calculate the potential coefficients
     // Create a array of Fourier coefficients
-    Eigen::ArrayXd n = Eigen::ArrayXd::LinSpaced(num_fs, 0, num_fs - 1); // Nx1
+    Eigen::ArrayXd n = (Eigen::ArrayXd::LinSpaced(N, 0, N - 1)); // 1xN
 
     
-    Eigen::ArrayXd outer_coeff = (2.0/hw_arra)*V0*(1.0 / ((2 * n + 1) * PI / (2.0 * hw_arra)).square());
+    Eigen::ArrayXd outer_coeff = (2.0/hw_arra)*V0*(1.0 / ((2 * n + 1) * PI / (2.0 * hw_arra)).square()); // 1xN
     
     // Calculate v_n1 and v_n3 for all n
     Eigen::ArrayXd v_n1 = (g[0] - V0) / (x[0] - hw_micrstr) *
-        ((2 * n + 1).cast<double>() * x[0] * PI / (2 * hw_arra)).cos() -
-        ((2 * n.array() + 1).cast<double>() * hw_micrstr * PI / (2 * hw_arra)).cos();
+        ((2 * n + 1) * x[0] * PI / (2 * hw_arra)).cos() -
+        ((2 * n + 1) * hw_micrstr * PI / (2 * hw_arra)).cos(); // 1xN
 
-    Eigen::ArrayXd v_n3 = (g.back()) / (hw_arra - x.back()) *
-        ((2 * n + 1).cast<double>() * x.back() * PI / (2 * hw_arra)).cos();
+    Eigen::ArrayXd v_n3 = (g[M]) / (hw_arra - x[M]) *
+        ((2 * n + 1) * x[M] * PI / (2 * hw_arra)).cos(); // 1xN
 
     // Convert the x and g vectors to arrays
-    Eigen::ArrayXd x_array = Eigen::Map<const Eigen::ArrayXd>(x.data(), x.size());
-    Eigen::ArrayXd g_array = Eigen::Map<const Eigen::ArrayXd>(g.data(), g.size());
+    Eigen::ArrayXd x_array = Eigen::Map<const Eigen::ArrayXd>(x.data(), x.size(), 1); // Mx1
+    Eigen::ArrayXd g_array = Eigen::Map<const Eigen::ArrayXd>(g.data(), g.size(), 1); // Mx1
 
-    // Reshape x into a column vector (m x 1)
-    Eigen::MatrixXd x_t = x_array.transpose();
+    // Calculate cos1 and cos2 (segment takes start index and number of positions including start index to be taken)
+    // Require values from second element to the last element (1 to (M-1)th)
+    Eigen::ArrayXd cos1 = ((x_array.bottomRows(M - 1) * PI / (2 * hw_arra)).matrix() * (2 * n + 1).matrix()).array().cos(); // M-1x1 * 1xN = M-1xN
+    // Require values from first element to the second last element (0 to (M-1th))
+    Eigen::ArrayXd cos2 = ((x_array.topRows(M - 1) * PI / (2 * hw_arra)).matrix() * (2 * n + 1).matrix()).array().cos(); // M-1x1 * 1xN = M-1xN
 
-    // Calculate cos1 and cos2
-    // Xi => last m-1 values
-    Eigen::ArrayXd cos1 = (x_t.bottomRows(m - 1).array() * PI / (2 * hw_arra) * (2 * n + 1)).cos(); // m-1x1 * 1xN = m-1xN
-    // Xi-1 => first m-1 values
-    Eigen::ArrayXd cos2 = (x_t.topRows(m - 1).array() * PI / (2 * hw_arra) * (2 * n + 1)).cos(); // m-1x1 * 1xN = m-1xN
-
-    // Calculate fac1: g[1:m] - g[0:m-1]     
-    Eigen::ArrayXd fac1 = (g_array.segment(1, m-1) - g_array.segment(0, m-1)) /
-                        (x_array.segment(1, m-1) - x_array.segment(0, m-1)); // 1xm-1
+    // Calculate fac1: g[1:M] - g[0:M-1]     
+    Eigen::ArrayXd coeff_vn2 = (g_array.bottomRows(M-1) - g_array.topRows(M-1)) /
+                        (x_array.bottomRows(M-1) - x_array.topRows(M-1)); // M-1x1
 
     // Calculate v_n2: fac1 multiplied by the difference of cosines
-    Eigen::ArrayXd v_n2 = fac1 * (cos1 - cos2); // 1xm-1 * m-1xN = 1xN
+    Eigen::ArrayXd v_n2 = coeff_vn2.transpose().matrix() * (cos1 - cos2).matrix(); // 1xM-1 * M-1xN = 1xN
 
     Eigen::ArrayXd vn = outer_coeff*(v_n1+v_n2+v_n3); // 1xN
+
+    assert(vn.rows() == 1 && "The calculated potential coefficients resulted in a column vector");
 
     return vn;
 }
@@ -166,13 +166,13 @@ Eigen::ArrayXd calculatePotential(const double hw_arra,
     assert(vn.rows() != 0 && "Potenntial coefficients vn is empty"); // && message is a trick to print message in assert as the assert checks failure of conditons                                    
     
     // Create the Fourier coefficients
-    Eigen::ArrayXd n = Eigen::ArrayXd::LinSpaced(num_fs, 0, num_fs - 1); // Nx1
+    Eigen::ArrayXd n = Eigen::ArrayXd::LinSpaced(num_fs, 0, num_fs - 1).transpose(); // Nx1
 
     // Convert the x vector to a MatrixXd (Mxm)
     Eigen::MatrixXd x_matrix = Eigen::Map<const Eigen::MatrixXd>(x.data(), 1, x.size()); // 1xM
 
     // Calculate cosines: NxM => the final .array() will make it an array type
-    Eigen::ArrayXd cos1 = (((2 * n + 1) * (PI / (2 * hw_arra))).matrix() * x_matrix).array().cos(); // 
+    Eigen::ArrayXd cos1 = (((2 * n + 1) * (PI / (2 * hw_arra))).matrix() * x_matrix).array().cos(); // NxM
 
     // Multiply vn with cos1; vn should be a column vector for proper broadcasting
     // Expected dimension of vn is 1xN but verify it
