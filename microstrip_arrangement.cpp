@@ -1,11 +1,7 @@
 #include <iostream>
-#include <tuple>
 #include <format>
 #include <string>
-#include <algorithm>
-#include <numeric>
 #include <numbers>
-#include <utility>
 #include <cassert>
 #include <stdexcept>
 #include <vector>
@@ -90,7 +86,7 @@ void filterVectors(const double& hw_micrstr,
     }
 }
 
-//std::tie(filtered_g, filtered_x), std::pair<std::vector<double>, std::vector<double>> {filtered_g,filtered_x}
+//std::tie(filtered_g, filtered_x), std::pair<std::vector<double>, std::vector<double>> {filtered_g,filtered_x} #include <tuple>
 
 // Calculate the potential coefficients
 Eigen::ArrayXd calculatePotentialCoeffs(const double& V0,
