@@ -27,7 +27,7 @@ bool isMonotonicallyDecreasing(const std::vector<double>& g){
 
     // Iterate through the array and check if each element is greater than the next one
     for (size_t idx = 1; idx < g.size(); ++idx) {
-        if (g[idx] >= g[idx - 1]) {
+        if (g[idx] > g[idx - 1]) {
             return false; // Found an instance where the order is not decreasing
         }
     }
@@ -67,8 +67,8 @@ void filterVectors(const double& hw_micrstr,
                     const double& hw_arra, 
                     const std::vector<double> original_g, 
                     const std::vector<double> original_x,
-                    std::vector<double>& filtered_x,
-                    std::vector<double>& filtered_g){
+                    std::vector<double>& filtered_g,
+                    std::vector<double>& filtered_x){
     std::cout<<"Input vectors are being filtered\n";
     
     // Assuming that both x and g have the same dimensions
