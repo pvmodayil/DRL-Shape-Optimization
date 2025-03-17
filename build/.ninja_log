@@ -1,8 +1,8 @@
 # ninja log v6
 36	867	7639121584170025	CMakeFiles/microstrip_arrangement.dir/file_io.cpp.obj	a49224fc42be2c7a
-42	1542	7639126611980606	CMakeFiles/microstrip_arrangement.dir/main.cpp.obj	57329d0df51ed32d
-1542	1756	7639126626953026	microstrip_arrangement.exe	27aa7c53fb5aa9c0
-40	5967	7639121584210043	CMakeFiles/microstrip_arrangement.dir/microstrip_arrangement.cpp.obj	ce43e406f3f50073
-40	1644	7639217055064989	CMakeFiles/microstrip_arrangement.dir/main.cpp.obj	57329d0df51ed32d
-44	6029	7639217055064989	CMakeFiles/microstrip_arrangement.dir/microstrip_arrangement.cpp.obj	ce43e406f3f50073
-6029	6291	7639217114910548	microstrip_arrangement.exe	27aa7c53fb5aa9c0
+33	1564	7639248574635121	CMakeFiles/microstrip_arrangement.dir/main.cpp.obj	57329d0df51ed32d
+1565	1784	7639248589951815	microstrip_arrangement.exe	27aa7c53fb5aa9c0
+35	5709	7639218970751925	CMakeFiles/microstrip_arrangement.dir/microstrip_arrangement.cpp.obj	ce43e406f3f50073
+37	1621	7639252164311679	CMakeFiles/microstrip_arrangement.dir/main.cpp.obj	57329d0df51ed32d
+41	5962	7639252164341060	CMakeFiles/microstrip_arrangement.dir/microstrip_arrangement.cpp.obj	ce43e406f3f50073
+5962	6170	7639252223554377	microstrip_arrangement.exe	27aa7c53fb5aa9c0

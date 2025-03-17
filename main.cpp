@@ -48,16 +48,45 @@ int main(){
         .N = 2000                 // Number of elements in the array
     };
 
+    std::vector<double> filterg = data["g_ptsy"];
+    std::vector<double> filterx = data["g_ptsx"];
     // Filter vectors
     MSA::filterVectors(arrangement.hw_micrstr,
                     arrangement.hw_arra,
-                    data["g_ptsy"],
-                    data["g_ptsx"],
-                    data["gpts_y"],
-                    data["g_ptsx"]);
-                    
+                    filterg,
+                    filterx,
+                    filterg,
+                    filterx);
+
+    for (const auto& val : filterg) {
+        std::cout << val << " "; 
+        
+    }
+    std::cout << std::endl;
+    for (const auto& val : filterx) {
+        std::cout << val << " "; 
+        
+    }
+    std::cout << std::endl;
+
     std::cout << "Checking for monotonicity" << std::endl;
     std::cout << MSA::isMonotonicallyDecreasing(data["g_ptsy"]) << std::endl;
     
+    // Energy calculation
+    Eigen::ArrayXd vn = MSA::calculatePotentialCoeffs(arrangement.V0,
+        arrangement.hw_micrstr,
+        arrangement.hw_arra,
+        arrangement.N,data["g_ptsy"],
+        data["g_ptsx"]);
+
+    // double energy = MSA::calculateEnergy(arrangement.er1,
+    //     arrangement.er2,
+    //     arrangement.hw_arra,
+    //     arrangement.ht_arra,
+    //     arrangement.ht_subs,
+    //     arrangement.N,
+    //     vn);
+    
+    // std::cout << "Energy: " << energy << " VAs" << std::endl;
     return 0;
 }
