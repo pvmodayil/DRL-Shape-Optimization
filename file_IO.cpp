@@ -26,14 +26,14 @@ std::unordered_map<std::string, std::vector<double>> readCSV(const std::string& 
     std::ifstream file(filename);
     if (!file.is_open()) {
         std::cerr << "Unable to open file " << filename << std::endl;
-        return;
+        return data;
     }
 
     // Initialize the line
-    std::string line;
+    std::string current_line;
     // Split the header line into individual header_names
-    std::getline(file, line);
-    std::vector<std::string> column_headers = split(line, ',');
+    std::getline(file, current_line);
+    std::vector<std::string> column_headers = split(current_line, ',');
 
     // Add the column names and create empty vectors
     for (size_t i = 0; i < column_headers.size(); ++i) {
@@ -41,8 +41,8 @@ std::unordered_map<std::string, std::vector<double>> readCSV(const std::string& 
     }
 
     // Read rest of the lines in the file
-    while (std::getline(file, line)) {
-        std::vector<std::string> row = split(line, ',');
+    while (std::getline(file, current_line)) {
+        std::vector<std::string> row = split(current_line, ',');
 
         // Check if the row has the same number of header_names as the header
         if (row.size() != column_headers.size()) {
