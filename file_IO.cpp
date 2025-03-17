@@ -1,9 +1,12 @@
+#include <file_io.h>
 #include <fstream>
 #include <sstream>
 #include <vector>
 #include <string>
 #include <unordered_map>
 #include <iostream>
+
+namespace fileio{
 
 // Function to split a string into a vector of strings based on a delimiter
 std::vector<std::string> split(const std::string& str, char delimiter) {
@@ -59,3 +62,5 @@ std::unordered_map<std::string, std::vector<double>> readCSV(const std::string& 
 
     return data;
 }
+
+} // fileio namespace
