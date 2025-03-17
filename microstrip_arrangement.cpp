@@ -123,7 +123,7 @@ Eigen::ArrayXd calculatePotentialCoeffs(const double& V0,
 
     // Calculate outer coefficient
     Eigen::ArrayXd outer_coeff = (2.0/hw_arra)*V0*(1.0 / ((2 * n + 1) * PI / (2.0 * hw_arra)).square()); // 1xN
-    
+
     // Calculate v_n1 and v_n3 for all n
     Eigen::ArrayXd v_n1 = (g[0] - V0) / (x[0] - hw_micrstr) *
         ((2 * n + 1) * x[0] * PI / (2 * hw_arra)).cos() -
@@ -152,7 +152,9 @@ Eigen::ArrayXd calculatePotentialCoeffs(const double& V0,
 
     // Calculate cos1 and cos2 (segment takes start index and number of positions including start index to be taken)
     // Require values from second element to the last element (1 to (M-1)th)
+    std::cout<<"here1\n";
     Eigen::ArrayXd cos1 = ((x_array.bottomRows(M - 1) * PI / (2 * hw_arra)).matrix() * (2 * n + 1).matrix()).array().cos(); // M-1x1 * 1xN = M-1xN
+    std::cout<<"here2\n";
     // Require values from first element to the second last element (0 to (M-1th))
     Eigen::ArrayXd cos2 = ((x_array.topRows(M - 1) * PI / (2 * hw_arra)).matrix() * (2 * n + 1).matrix()).array().cos(); // M-1x1 * 1xN = M-1xN
 
@@ -160,6 +162,7 @@ Eigen::ArrayXd calculatePotentialCoeffs(const double& V0,
     Eigen::ArrayXd coeff_vn2 = (g_array.bottomRows(M-1) - g_array.topRows(M-1)) /
                         (x_array.bottomRows(M-1) - x_array.topRows(M-1)); // M-1x1
 
+    std::cout<<"here3\n";
     // Calculate v_n2: fac1 multiplied by the difference of cosines
     Eigen::ArrayXd v_n2 = coeff_vn2.transpose().matrix() * (cos1 - cos2).matrix(); // 1xM-1 * M-1xN = 1xN
 
