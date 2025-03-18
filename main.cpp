@@ -23,11 +23,11 @@ struct GeneticAlgo {
 };
 
 int main(){
-
-    std::string filename = "result_curve.csv";
-    std::cout << "Here";
+    std::string filename = "../nominal.csv";
+    std::cout<< "Reading g point values from: " << filename << std::endl;
     std::unordered_map<std::string, std::vector<double>> data = fileio::readCSV(filename);
 
+    // Microstrip arrangement 
     MicrostripArrangement arrangement = {
         .V0 = 1.0,
         .hw_micrstr = 0.05e-3,  // Half-width of microstrip in meters 
@@ -37,23 +37,9 @@ int main(){
         .ht_subs = 0.1382e-3,     // Height of substrate in meters 
         .er1 = 1.0,            // Relative permittivity of substrate
         .er2 = 12.9,            // Relative permittivity of air
-        .N = 100             // Number of elements in the array
+        .N = 5000            // Number of elements in the array
     };
     
-    std::vector<double> x = {1,2,3};
-    std::vector<double> g = {0.9,0.6,0.5};
-    std::cout<<"X: ";
-    for (size_t i = 0; i<x.size(); ++i){
-        std::cout<< x[i] ;
-    }
-    std::cout<< "\n";
-    
-    std::cout<<"G: ";
-    for (size_t i = 0; i<g.size(); ++i){
-        std::cout<< g[i] ;
-    }
-    std::cout<< "\n";
-
     // Energy calculation
     Eigen::ArrayXd vn = MSA::calculatePotentialCoeffs(arrangement.V0,
         arrangement.hw_micrstr,

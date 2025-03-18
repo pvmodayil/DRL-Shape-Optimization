@@ -186,11 +186,10 @@ Eigen::ArrayXd calculatePotential(const double& hw_arra,
 
     // Calculate cosines: NxM => the final .array() will make it an array type
     Eigen::ArrayXXd cos1 = (((2 * n + 1) * (PI / (2 * hw_arra))).matrix() * x_matrix).array().cos(); // NxM
-
+    
     // Multiply vn with cos1; input vn is expected to be Nx1 dimension
     // vn is a column vector, convert it to row vector and calculate
     Eigen::ArrayXd VF = (vn.matrix().transpose() * cos1.matrix()).transpose().array(); // 1xN * NxM = 1xM => will be Mx1 after transpose
-    std::cout<<"VF rows: "<<VF.rows() << " cols: " <<VF.cols() << std::endl; 
     // Since expected result is a 1D array ArrayXd is enough and not ArrayXXd
     return VF;   
 }
