@@ -203,24 +203,34 @@ Eigen::ArrayXd calculatePotential(const double& hw_arra,
 Eigen::ArrayXd logsinh(const Eigen::ArrayXd& vector){
     // sinh = (e^x - e^(-x))/2 => ln(sinh(x)) = ln(e^x - e^(-x)) - ln(2)
 
-    // Exponential of the values after normalization to avoid overflow
-    Eigen::ArrayXd exp_x = (vector - vector.maxCoeff()).exp();
-    Eigen::ArrayXd exp_neg_x = (-vector - vector.maxCoeff()).exp();
+    // Get absolute values
+    Eigen::ArrayXd absolute_vector = vector.abs();
 
-    // Rescaling and completing the formula
-    return (exp_x - exp_neg_x).log() + vector.maxCoeff() - std::log(2);
+    // Exponential of the values after normalization to avoid overflow
+    Eigen::ArrayXd exp_x = vector.exp();
+    Eigen::ArrayXd exp_neg_x = (-vector).exp();
+    Eigen::ArrayXd small_result = (exp_x - exp_neg_x).log() - std::log(2.0);
+    Eigen::ArrayXd large_result = absolute_vector - std::log(2.0);
+    
+    // Select values based on conditions, large x values are scaled
+    return (absolute_vector > 33.0).select(large_result, small_result);
 }
 
 // Function to compute the natural logarithm of the cosh function
 Eigen::ArrayXd logcosh(const Eigen::ArrayXd& vector){
     // cosh = (e^x + e^(-x))/2 => ln(cosh(x)) = ln(e^x + e^(-x)) - ln(2)
 
-    // Exponential of the values after normalization to avoid overflow
-    Eigen::ArrayXd exp_x = (vector - vector.maxCoeff()).exp();
-    Eigen::ArrayXd exp_neg_x = (-vector - vector.maxCoeff()).exp();
+    // Get absolute values
+    Eigen::ArrayXd absolute_vector = vector.abs();
 
-    // Rescaling and completing the formula
-    return (exp_x + exp_neg_x).log() + vector.maxCoeff() - std::log(2);
+    // Exponential of the values after normalization to avoid overflow
+    Eigen::ArrayXd exp_x = vector.exp();
+    Eigen::ArrayXd exp_neg_x = (-vector).exp();
+    Eigen::ArrayXd small_result = (exp_x + exp_neg_x).log() - std::log(2.0);
+    Eigen::ArrayXd large_result = absolute_vector - std::log(2.0);
+    
+    // Select values based on conditions, large x values are scaled
+    return (absolute_vector > 33.0).select(large_result, small_result);
 }
 
 // Function to calculate the energy of the curve
