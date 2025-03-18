@@ -30,28 +30,42 @@ int main(){
 
     MicrostripArrangement arrangement = {
         .V0 = 1.0,
-        .hw_micrstr = 0.05e-3,  // Half-width of microstrip in meters 
+        .hw_micrstr = 0.0, //0.05e-3,  // Half-width of microstrip in meters 
         .ht_micrstr = 0.0,   // Height of microstrip in meters 
-        .hw_arra = 1.38e-3,      // Half-width of array in meters 
+        .hw_arra = 4.0, //1.38e-3,      // Half-width of array in meters 
         .ht_arra = 2.76e-3,       // Height of array in meters 
         .ht_subs = 0.1382e-3,     // Height of substrate in meters 
         .er1 = 1.0,            // Relative permittivity of substrate
         .er2 = 12.9,            // Relative permittivity of air
-        .N = 20                // Number of elements in the array
+        .N = 3              // Number of elements in the array
     };
     
+    std::vector<double> x = {1,2,3};
+    std::vector<double> g = {0.9,0.6,0.5};
+    std::cout<<"X: ";
+    for (size_t i = 0; i<x.size(); ++i){
+        std::cout<< x[i] ;
+    }
+    std::cout<< "\n";
+    
+    std::cout<<"G: ";
+    for (size_t i = 0; i<g.size(); ++i){
+        std::cout<< g[i] ;
+    }
+    std::cout<< "\n";
+
     // Energy calculation
     Eigen::ArrayXd vn = MSA::calculatePotentialCoeffs(arrangement.V0,
         arrangement.hw_micrstr,
         arrangement.hw_arra,
-        arrangement.N,data["g_ptsy"],
-        data["g_ptsx"]);
-    Eigen::ArrayXd VF = MSA::calculatePotential(arrangement.hw_arra,
-        arrangement.N,
-        vn,
-        data["g_ptsx"]);
-    //std::cout<<"PotentialCoeff: "<<vn<<std::endl;
-    std::cout<<"Potential: "<<VF<<std::endl;
+        arrangement.N,g,
+        x);
+    // Eigen::ArrayXd VF = MSA::calculatePotential(arrangement.hw_arra,
+    //     arrangement.N,
+    //     vn,
+    //     x);
+    // //std::cout<<"PotentialCoeff: "<<vn<<std::endl;
+    // std::cout<<"Potential: "<<VF<<std::endl;
 
     // double energy = MSA::calculateEnergy(arrangement.er1,
     //     arrangement.er2,

@@ -121,15 +121,16 @@ Eigen::ArrayXd calculatePotentialCoeffs(const double& V0,
 
     // Calculate outer coefficient
     Eigen::ArrayXd outer_coeff = (2.0/hw_arra)*V0*(1.0 / ((2 * n + 1) * PI / (2.0 * hw_arra)).square()); // Nx1
-    
+
     // Calculate v_n1 and v_n3 for all n
-    Eigen::ArrayXd v_n1 = (g[0] - V0) / (x[0] - hw_micrstr) *
-        ((2 * n + 1) * x[0] * PI / (2 * hw_arra)).cos() -
-        ((2 * n + 1) * hw_micrstr * PI / (2 * hw_arra)).cos(); // Nx1
-
-    Eigen::ArrayXd v_n3 = (g[M-1]) / (hw_arra - x[M-1]) *
-        ((2 * n + 1) * x[M-1] * PI / (2 * hw_arra)).cos(); // Nx1
-
+    Eigen::ArrayXd v_n1 = (g[0]-V0)/(x[0]-hw_micrstr)*(
+        ((2*n+1)*x[0]*PI/(2*hw_arra)).cos()-((2*n+1)*hw_micrstr*PI/(2*hw_arra)).cos()
+    ); // Nx1
+    
+    Eigen::ArrayXd v_n3 = (g[M-1])/(hw_arra - x[M-1]) * (
+        ((2 * n + 1) * x[M-1] * PI / (2 * hw_arra)).cos()
+    ); // Nx1
+    
     // Edge case when the input vector is very small
     if(M == 2){
         // Calculate cos1 and cos2 (segment takes start index and number of positions including start index to be taken)
@@ -147,32 +148,24 @@ Eigen::ArrayXd calculatePotentialCoeffs(const double& V0,
     // Convert the x and g vectors to arrays
     Eigen::ArrayXd x_array = Eigen::Map<const Eigen::ArrayXd>(x.data(), x.size(), 1); // Mx1
     Eigen::ArrayXd g_array = Eigen::Map<const Eigen::ArrayXd>(g.data(), g.size(), 1); // Mx1
-
+    
     // Calculate cos1 and cos2 (segment takes start index and number of positions including start index to be taken)
     // Require values from second element to the last element (1 to (M-1)th)
     Eigen::ArrayXXd cos1 = ((x_array.bottomRows(M - 1) * PI / (2 * hw_arra)).matrix() * (2 * n + 1).matrix().transpose()).array().cos(); // M-1x1 * 1xN = M-1xN
-    
     // Require values from first element to the second last element (0 to (M-1th))
     Eigen::ArrayXXd cos2 = ((x_array.topRows(M - 1) * PI / (2 * hw_arra)).matrix() * (2 * n + 1).matrix().transpose()).array().cos(); // M-1x1 * 1xN = M-1xN
-
     // Calculate fac1: g[1:M] - g[0:M-1]     
     Eigen::ArrayXd coeff_vn2 = (g_array.bottomRows(M-1) - g_array.topRows(M-1)) /
                         (x_array.bottomRows(M-1) - x_array.topRows(M-1)); // M-1x1
 
-   
     // Calculate v_n2: fac1 multiplied by the difference of cosines
     Eigen::MatrixXd cos_diff = (cos1 - cos2).matrix(); // M-1xN
     Eigen::MatrixXd coeff_matrix = coeff_vn2.matrix(); // M-1x1
-    Eigen::MatrixXd v_n2 = (coeff_matrix.transpose() * cos_diff).array(); // 1xM-1 * M-1xN = 1xN
-    std::cout<<"vn2 rows: "<<v_n2.rows() << " cols: " <<v_n2.cols() << std::endl; 
+    Eigen::MatrixXd v_n2 = (coeff_matrix.transpose() * cos_diff); // 1xM-1 * M-1xN = 1xN
+    
     Eigen::ArrayXd vn = outer_coeff*(v_n1+(v_n2.transpose().array())+v_n3); // Nx1
-    std::cout<<"vn rows: "<<vn.rows() << " cols: " <<vn.cols() << std::endl;
 
-    // Debug prints for intermediate values
-    std::cout << "v_n1 min: " << v_n1.minCoeff() << ", max: " << v_n1.maxCoeff() << std::endl;
-    std::cout << "v_n2 min: " << v_n2.minCoeff() << ", max: " << v_n2.maxCoeff() << std::endl;
-    std::cout << "v_n3 min: " << v_n3.minCoeff() << ", max: " << v_n3.maxCoeff() << std::endl;
-    std::cout << "outer_coeff min: " << outer_coeff.minCoeff() << ", max: " << outer_coeff.maxCoeff() << std::endl;
+    std::cout<<vn;
     return vn;
 }
 
