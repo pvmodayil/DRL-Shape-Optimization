@@ -27,14 +27,6 @@ int main(){
     std::string filename = "result_curve.csv";
     
     std::unordered_map<std::string, std::vector<double>> data = fileio::readCSV(filename);
-    // Print the data to verify
-    for (const auto& pair : data) {
-        std::cout << pair.first << ": ";
-        for (const auto& value : pair.second) {
-            std::cout << value << " ";
-        }
-        std::cout << std::endl;
-    }
 
     MicrostripArrangement arrangement = {
         .V0 = 1.0,
@@ -45,32 +37,8 @@ int main(){
         .ht_subs = 0.1382e-3,     // Height of substrate in meters 
         .er1 = 1.0,            // Relative permittivity of substrate
         .er2 = 12.9,            // Relative permittivity of air
-        .N = 2000                 // Number of elements in the array
+        .N = 20                // Number of elements in the array
     };
-
-    std::vector<double> filterg = data["g_ptsy"];
-    std::vector<double> filterx = data["g_ptsx"];
-    // Filter vectors
-    MSA::filterVectors(arrangement.hw_micrstr,
-                    arrangement.hw_arra,
-                    filterg,
-                    filterx,
-                    filterg,
-                    filterx);
-
-    for (const auto& val : filterg) {
-        std::cout << val << " "; 
-        
-    }
-    std::cout << std::endl;
-    for (const auto& val : filterx) {
-        std::cout << val << " "; 
-        
-    }
-    std::cout << std::endl;
-
-    std::cout << "Checking for monotonicity" << std::endl;
-    std::cout << MSA::isMonotonicallyDecreasing(data["g_ptsy"]) << std::endl;
     
     // Energy calculation
     Eigen::ArrayXd vn = MSA::calculatePotentialCoeffs(arrangement.V0,
@@ -78,6 +46,12 @@ int main(){
         arrangement.hw_arra,
         arrangement.N,data["g_ptsy"],
         data["g_ptsx"]);
+    Eigen::ArrayXd VF = MSA::calculatePotential(arrangement.hw_arra,
+        arrangement.N,
+        vn,
+        data["g_ptsx"]);
+    //std::cout<<"PotentialCoeff: "<<vn<<std::endl;
+    std::cout<<"Potential: "<<VF<<std::endl;
 
     // double energy = MSA::calculateEnergy(arrangement.er1,
     //     arrangement.er2,

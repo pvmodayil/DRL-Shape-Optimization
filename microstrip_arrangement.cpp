@@ -69,13 +69,8 @@ void filterVectors(const double& hw_micrstr,
                     const std::vector<double> original_x,
                     std::vector<double>& filtered_g,
                     std::vector<double>& filtered_x){
-    std::cout<<"Input vectors are being filtered\n";
-    
     // Assuming that both x and g have the same dimensions
-    std::string error_message = std::format("Dimensions of x-axis vector and g-points vector do not match!");
-    assert((std::format("Dimensions of x-axis vector and g-point vector do not match!g: {}, x: {}",
-            original_g.size(),original_x.size()), 
-                original_g.size() == original_x.size()));
+    std::cout<<"Input vectors are being filtered\n";
 
     // Create clear and add to the filtered vectors what is required
     filtered_g.clear();
@@ -108,7 +103,10 @@ Eigen::ArrayXd calculatePotentialCoeffs(const double& V0,
     size_t M = x.size();
     
     // Assert the requirements
-    assert(M > 1 && "Not enough spline knots, at least two points are required between half width of microstrip and half width of arrangement!");
+    if(M < 2){
+        throw std::invalid_argument("Not enough spline knots, at least two points are required between half width of microstrip and half width of arrangement!");
+    }
+    
     if (g.size() != x.size()) {
         throw std::invalid_argument(std::format("Dimensions of x-axis vector and g-point vector do not match! g: {}, x: {}", g.size(), x.size()));
     }
@@ -118,30 +116,30 @@ Eigen::ArrayXd calculatePotentialCoeffs(const double& V0,
         throw std::runtime_error("Input x-axis values are not sorted.");
     }
 
-    // Create a array of Fourier coefficients
-    Eigen::ArrayXd n = (Eigen::ArrayXd::LinSpaced(N, 0, N - 1)); // 1xN
+    // Create an array of Fourier coefficients
+    Eigen::ArrayXd n = (Eigen::ArrayXd::LinSpaced(N, 0, N - 1)); // Nx1
 
     // Calculate outer coefficient
-    Eigen::ArrayXd outer_coeff = (2.0/hw_arra)*V0*(1.0 / ((2 * n + 1) * PI / (2.0 * hw_arra)).square()); // 1xN
-
+    Eigen::ArrayXd outer_coeff = (2.0/hw_arra)*V0*(1.0 / ((2 * n + 1) * PI / (2.0 * hw_arra)).square()); // Nx1
+    
     // Calculate v_n1 and v_n3 for all n
     Eigen::ArrayXd v_n1 = (g[0] - V0) / (x[0] - hw_micrstr) *
         ((2 * n + 1) * x[0] * PI / (2 * hw_arra)).cos() -
-        ((2 * n + 1) * hw_micrstr * PI / (2 * hw_arra)).cos(); // 1xN
+        ((2 * n + 1) * hw_micrstr * PI / (2 * hw_arra)).cos(); // Nx1
 
-    Eigen::ArrayXd v_n3 = (g[M]) / (hw_arra - x[M]) *
-        ((2 * n + 1) * x[M] * PI / (2 * hw_arra)).cos(); // 1xN
+    Eigen::ArrayXd v_n3 = (g[M-1]) / (hw_arra - x[M-1]) *
+        ((2 * n + 1) * x[M-1] * PI / (2 * hw_arra)).cos(); // Nx1
 
     // Edge case when the input vector is very small
     if(M == 2){
         // Calculate cos1 and cos2 (segment takes start index and number of positions including start index to be taken)
-        Eigen::ArrayXd cos1 = ((x[1] * PI / (2 * hw_arra)) * (2 * n + 1)).cos(); // 1xN 
+        Eigen::ArrayXd cos1 = ((x[1] * PI / (2 * hw_arra)) * (2 * n + 1)).cos(); // Nx1 
         // Require values from first element to the second last element (0 to (M-1th))
-        Eigen::ArrayXd cos2 = ((x[0] * PI / (2 * hw_arra)) * (2 * n + 1)).cos(); // 1xN
+        Eigen::ArrayXd cos2 = ((x[0] * PI / (2 * hw_arra)) * (2 * n + 1)).cos(); // Nx1
 
-        Eigen::ArrayXd v_n2 = (g[1]-g[0])/(x[1]-x[0])*(cos1-cos2); // 1xN
+        Eigen::ArrayXd v_n2 = (g[1]-g[0])/(x[1]-x[0])*(cos1-cos2); // Nx1
 
-        Eigen::ArrayXd vn = outer_coeff*(v_n1+v_n2+v_n3); // 1xN
+        Eigen::ArrayXd vn = outer_coeff*(v_n1+v_n2+v_n3); // Nx1
 
         return vn;
     }
@@ -152,54 +150,57 @@ Eigen::ArrayXd calculatePotentialCoeffs(const double& V0,
 
     // Calculate cos1 and cos2 (segment takes start index and number of positions including start index to be taken)
     // Require values from second element to the last element (1 to (M-1)th)
-    std::cout<<"here1\n";
-    Eigen::ArrayXd cos1 = ((x_array.bottomRows(M - 1) * PI / (2 * hw_arra)).matrix() * (2 * n + 1).matrix()).array().cos(); // M-1x1 * 1xN = M-1xN
-    std::cout<<"here2\n";
+    Eigen::ArrayXXd cos1 = ((x_array.bottomRows(M - 1) * PI / (2 * hw_arra)).matrix() * (2 * n + 1).matrix().transpose()).array().cos(); // M-1x1 * 1xN = M-1xN
+    
     // Require values from first element to the second last element (0 to (M-1th))
-    Eigen::ArrayXd cos2 = ((x_array.topRows(M - 1) * PI / (2 * hw_arra)).matrix() * (2 * n + 1).matrix()).array().cos(); // M-1x1 * 1xN = M-1xN
+    Eigen::ArrayXXd cos2 = ((x_array.topRows(M - 1) * PI / (2 * hw_arra)).matrix() * (2 * n + 1).matrix().transpose()).array().cos(); // M-1x1 * 1xN = M-1xN
 
     // Calculate fac1: g[1:M] - g[0:M-1]     
     Eigen::ArrayXd coeff_vn2 = (g_array.bottomRows(M-1) - g_array.topRows(M-1)) /
                         (x_array.bottomRows(M-1) - x_array.topRows(M-1)); // M-1x1
 
-    std::cout<<"here3\n";
+   
     // Calculate v_n2: fac1 multiplied by the difference of cosines
-    Eigen::ArrayXd v_n2 = coeff_vn2.transpose().matrix() * (cos1 - cos2).matrix(); // 1xM-1 * M-1xN = 1xN
+    Eigen::MatrixXd cos_diff = (cos1 - cos2).matrix(); // M-1xN
+    Eigen::MatrixXd coeff_matrix = coeff_vn2.matrix(); // M-1x1
+    Eigen::MatrixXd v_n2 = (coeff_matrix.transpose() * cos_diff).array(); // 1xM-1 * M-1xN = 1xN
+    std::cout<<"vn2 rows: "<<v_n2.rows() << " cols: " <<v_n2.cols() << std::endl; 
+    Eigen::ArrayXd vn = outer_coeff*(v_n1+(v_n2.transpose().array())+v_n3); // Nx1
+    std::cout<<"vn rows: "<<vn.rows() << " cols: " <<vn.cols() << std::endl;
 
-    Eigen::ArrayXd vn = outer_coeff*(v_n1+v_n2+v_n3); // 1xN
-
-    assert(vn.rows() == 1 && "The calculated potential coefficients resulted in a column vector");
-
+    // Debug prints for intermediate values
+    std::cout << "v_n1 min: " << v_n1.minCoeff() << ", max: " << v_n1.maxCoeff() << std::endl;
+    std::cout << "v_n2 min: " << v_n2.minCoeff() << ", max: " << v_n2.maxCoeff() << std::endl;
+    std::cout << "v_n3 min: " << v_n3.minCoeff() << ", max: " << v_n3.maxCoeff() << std::endl;
+    std::cout << "outer_coeff min: " << outer_coeff.minCoeff() << ", max: " << outer_coeff.maxCoeff() << std::endl;
     return vn;
 }
 
 Eigen::ArrayXd calculatePotential(const double& hw_arra, 
                                 const int& N, 
-                                Eigen::ArrayXd& vn, 
+                                Eigen::ArrayXd& vn, // Expected to be Nx1 dimension
                                 std::vector<double>& x){
 
-    assert(vn.rows() != 0 && "Potenntial coefficients vn is empty"); // && message is a trick to print message in assert as the assert checks failure of conditons                                    
+    // Input potential coefficients must not be empty
+    if(vn.rows() == 0){
+        throw std::invalid_argument("Potenntial coefficients vn is empty");
+    }                                  
     
     // Create the Fourier coefficients
-    Eigen::ArrayXd n = Eigen::ArrayXd::LinSpaced(N, 0, N - 1).transpose(); // Nx1
+    Eigen::ArrayXd n = Eigen::ArrayXd::LinSpaced(N, 0, N - 1); // Nx1
 
-    // Convert the x vector to a MatrixXd (Mxm)
+    // Convert the x vector to a MatrixXd
     Eigen::MatrixXd x_matrix = Eigen::Map<const Eigen::MatrixXd>(x.data(), 1, x.size()); // 1xM
 
     // Calculate cosines: NxM => the final .array() will make it an array type
-    Eigen::ArrayXd cos1 = (((2 * n + 1) * (PI / (2 * hw_arra))).matrix() * x_matrix).array().cos(); // NxM
+    Eigen::ArrayXXd cos1 = (((2 * n + 1) * (PI / (2 * hw_arra))).matrix() * x_matrix).array().cos(); // NxM
 
-    // Multiply vn with cos1; vn should be a column vector for proper broadcasting
-    // Expected dimension of vn is 1xN but verify it
-    if(vn.rows() > 1){
-        // vn is a column vector, convert it to row vector and calculate
-        Eigen::ArrayXd VF = (vn.transpose().matrix() * cos1.matrix()).array(); // 1xN * NxM = 1xM
-        return VF;
-    }
-
-    Eigen::ArrayXd VF = (vn.matrix() * cos1.matrix()).array(); // 1xN * NxM = 1xM
-
-    return VF;
+    // Multiply vn with cos1; input vn is expected to be Nx1 dimension
+    // vn is a column vector, convert it to row vector and calculate
+    Eigen::ArrayXd VF = (vn.matrix().transpose() * cos1.matrix()).transpose().array(); // 1xN * NxM = 1xM => will be Mx1 as Arrays are vertical 
+    std::cout<<"VF rows: "<<VF.rows() << " cols: " <<VF.cols() << std::endl; 
+    // Since expected result is a 1D array ArrayXd is enough and not ArrayXXd
+    return VF;   
 }
 
 /*
