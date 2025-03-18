@@ -90,8 +90,8 @@ Eigen::ArrayXd calculatePotentialCoeffs(const double& V0,
                                     const double& hw_micrstr, 
                                     const double& hw_arra, 
                                     const int& N, 
-                                    std::vector<double>& g, 
-                                    std::vector<double>& x){
+                                    std::vector<double> g, 
+                                    std::vector<double> x){
 
     // Check if the values passed are within the allowed range else filter
     if(x[0] <= hw_micrstr || x.back() >= hw_arra){
@@ -120,15 +120,15 @@ Eigen::ArrayXd calculatePotentialCoeffs(const double& V0,
     Eigen::ArrayXd n = (Eigen::ArrayXd::LinSpaced(N, 0, N - 1)); // Nx1
 
     // Calculate outer coefficient
-    Eigen::ArrayXd outer_coeff = (2.0/hw_arra)*V0*(1.0 / ((2 * n + 1) * PI / (2.0 * hw_arra)).square()); // Nx1
+    Eigen::ArrayXd outer_coeff = (2.0/hw_arra) * V0 * (1.0/((2*n+1)*PI/(2.0*hw_arra)).square()); // Nx1
 
     // Calculate v_n1 and v_n3 for all n
-    Eigen::ArrayXd v_n1 = (g[0]-V0)/(x[0]-hw_micrstr)*(
+    Eigen::ArrayXd v_n1 = ((g[0]-V0) / (x[0]-hw_micrstr)) * (
         ((2*n+1)*x[0]*PI/(2*hw_arra)).cos()-((2*n+1)*hw_micrstr*PI/(2*hw_arra)).cos()
     ); // Nx1
     
-    Eigen::ArrayXd v_n3 = (g[M-1])/(hw_arra - x[M-1]) * (
-        ((2 * n + 1) * x[M-1] * PI / (2 * hw_arra)).cos()
+    Eigen::ArrayXd v_n3 = (g[M-1] / (hw_arra - x[M-1])) * (
+        ((2*n+1) * x[M-1] * PI / (2*hw_arra)).cos()
     ); // Nx1
     
     // Edge case when the input vector is very small
@@ -165,7 +165,6 @@ Eigen::ArrayXd calculatePotentialCoeffs(const double& V0,
     
     Eigen::ArrayXd vn = outer_coeff*(v_n1+(v_n2.transpose().array())+v_n3); // Nx1
 
-    std::cout<<vn;
     return vn;
 }
 
@@ -190,7 +189,7 @@ Eigen::ArrayXd calculatePotential(const double& hw_arra,
 
     // Multiply vn with cos1; input vn is expected to be Nx1 dimension
     // vn is a column vector, convert it to row vector and calculate
-    Eigen::ArrayXd VF = (vn.matrix().transpose() * cos1.matrix()).transpose().array(); // 1xN * NxM = 1xM => will be Mx1 as Arrays are vertical 
+    Eigen::ArrayXd VF = (vn.matrix().transpose() * cos1.matrix()).transpose().array(); // 1xN * NxM = 1xM => will be Mx1 after transpose
     std::cout<<"VF rows: "<<VF.rows() << " cols: " <<VF.cols() << std::endl; 
     // Since expected result is a 1D array ArrayXd is enough and not ArrayXXd
     return VF;   

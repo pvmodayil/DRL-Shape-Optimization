@@ -32,17 +32,19 @@ std::unordered_map<std::string, std::vector<double>> readCSV(const std::string& 
         return data;
     }
 
+    std::cout<< "Here1\n";
     // Initialize the line
     std::string current_line;
     // Split the header line into individual header_names
     std::getline(file, current_line);
     std::vector<std::string> column_headers = split(current_line, ',');
+    std::cout<< "Here2\n";
 
     // Add the column names and create empty vectors
     for (size_t i = 0; i < column_headers.size(); ++i) {
         data.insert({column_headers[i],std::vector<double>()});
     }
-
+    std::cout<< "Here3\n";
     // Read rest of the lines in the file
     while (std::getline(file, current_line)) {
         std::vector<std::string> row = split(current_line, ',');
@@ -57,7 +59,7 @@ std::unordered_map<std::string, std::vector<double>> readCSV(const std::string& 
             data[column_headers[i]].push_back(std::stod(row[i])); // convert the string into double values
         }
     }
-
+    std::cout<< "Here4\n";
     file.close();
 
     return data;

@@ -25,19 +25,19 @@ struct GeneticAlgo {
 int main(){
 
     std::string filename = "result_curve.csv";
-    
+    std::cout << "Here";
     std::unordered_map<std::string, std::vector<double>> data = fileio::readCSV(filename);
 
     MicrostripArrangement arrangement = {
         .V0 = 1.0,
-        .hw_micrstr = 0.0, //0.05e-3,  // Half-width of microstrip in meters 
+        .hw_micrstr = 0.05e-3,  // Half-width of microstrip in meters 
         .ht_micrstr = 0.0,   // Height of microstrip in meters 
-        .hw_arra = 4.0, //1.38e-3,      // Half-width of array in meters 
+        .hw_arra = 1.38e-3,      // Half-width of array in meters 
         .ht_arra = 2.76e-3,       // Height of array in meters 
         .ht_subs = 0.1382e-3,     // Height of substrate in meters 
         .er1 = 1.0,            // Relative permittivity of substrate
         .er2 = 12.9,            // Relative permittivity of air
-        .N = 3              // Number of elements in the array
+        .N = 100             // Number of elements in the array
     };
     
     std::vector<double> x = {1,2,3};
@@ -58,23 +58,25 @@ int main(){
     Eigen::ArrayXd vn = MSA::calculatePotentialCoeffs(arrangement.V0,
         arrangement.hw_micrstr,
         arrangement.hw_arra,
-        arrangement.N,g,
-        x);
-    // Eigen::ArrayXd VF = MSA::calculatePotential(arrangement.hw_arra,
-    //     arrangement.N,
-    //     vn,
-    //     x);
-    // //std::cout<<"PotentialCoeff: "<<vn<<std::endl;
-    // std::cout<<"Potential: "<<VF<<std::endl;
-
-    // double energy = MSA::calculateEnergy(arrangement.er1,
-    //     arrangement.er2,
-    //     arrangement.hw_arra,
-    //     arrangement.ht_arra,
-    //     arrangement.ht_subs,
-    //     arrangement.N,
-    //     vn);
+        arrangement.N,
+        data["g_ptsy"],
+        data["g_ptsx"]);
     
-    // std::cout << "Energy: " << energy << " VAs" << std::endl;
+    Eigen::ArrayXd VF = MSA::calculatePotential(arrangement.hw_arra,
+        arrangement.N,
+        vn,
+        data["g_ptsx"]);
+    std::cout<<"Potential: "<<VF<<std::endl;
+
+    double energy = MSA::calculateEnergy(arrangement.er1,
+        arrangement.er2,
+        arrangement.hw_arra,
+        arrangement.ht_arra,
+        arrangement.ht_subs,
+        arrangement.N,
+        vn);
+    
+    std::cout<<"Energy: "<<energy<<std::endl;
+    
     return 0;
 }

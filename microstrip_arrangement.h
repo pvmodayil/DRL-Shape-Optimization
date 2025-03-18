@@ -27,8 +27,8 @@ Eigen::ArrayXd calculatePotentialCoeffs(const double& V0,
     const double& hw_micrstr, 
     const double& hw_arra, 
     const int& N, 
-    std::vector<double>& g, 
-    std::vector<double>& x);
+    std::vector<double> g, 
+    std::vector<double> x);
 
 Eigen::ArrayXd calculatePotential(const double& hw_arra, 
     const int& N, 
