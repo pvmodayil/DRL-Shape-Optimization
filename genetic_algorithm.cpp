@@ -30,15 +30,13 @@ namespace GA{
             individual,
             starting_curveX);
 
-        double energy = MSA::calculateEnergy(arrangement.er1,
+        return MSA::calculateEnergy(arrangement.er1,
             arrangement.er2,
             arrangement.hw_arra,
             arrangement.ht_arra,
             arrangement.ht_subs,
             arrangement.N,
             vn);
-        
-        return energy;
     }
     
 
