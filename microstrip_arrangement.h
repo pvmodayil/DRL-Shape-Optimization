@@ -13,6 +13,39 @@
 
 namespace MSA{
 
+struct MicrostripArrangement {
+    const double V0;
+    const double hw_micrstr;
+    const double ht_micrstr;
+    const double hw_arra;
+    const double ht_arra;
+    const double ht_subs;
+    const double er1;
+    const double er2;
+    const int N; 
+
+    MicrostripArrangement(
+        const double V0, 
+        const double hw_micrstr, // Half-width of microstrip in meters 
+        const double ht_micrstr, // Height of microstrip in meters 
+        const double hw_arra, // Half-width of array in meters 
+        const double ht_arra, // Height of array in meters 
+        const double ht_subs, // Height of substrate in meters 
+        const double er1, // Relative permittivity of air
+        const double er2, // Relative permittivity of substrate
+        const int N) // Number of Fourier coefficients
+        : 
+        V0(V0), 
+        hw_micrstr(hw_micrstr), 
+        ht_micrstr(ht_micrstr), 
+        hw_arra(hw_arra), 
+        ht_arra(ht_arra), 
+        ht_subs(ht_subs), 
+        er1(er1), 
+        er2(er2), 
+        N(N){}
+};
+
 bool isMonotonicallyDecreasing(const std::vector<double>& g);
 
 bool isConvex(const std::vector<double>& g);
