@@ -16,6 +16,8 @@ namespace GA{
 
             // Microstrip arrangement properties
             const MSA::MicrostripArrangement arrangement;
+            
+            Eigen::MatrixXd initializePopulation(const double& noise_scale) const;
 
             double calculateFitness(const std::vector<double>& individual) const;
             
