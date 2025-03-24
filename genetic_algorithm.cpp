@@ -38,7 +38,7 @@ namespace GA{
 
         return initialPopulation;
     }
-    
+
     double GeneticAlgorithm::calculateFitness(const std::vector<double>& individual) const{
         // Energy calculation
         Eigen::ArrayXd vn = MSA::calculatePotentialCoeffs(arrangement.V0,
@@ -55,6 +55,12 @@ namespace GA{
             arrangement.ht_subs,
             arrangement.N,
             vn);
+    }
+
+    // Main function to run the optimization
+    void GeneticAlgorithm::optimize(const double& noise_scale){
+        // Create an initial population
+        Eigen::MatrixXd initialPopulation = initializePopulation(noise_scale);
     }
     
 

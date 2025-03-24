@@ -29,6 +29,9 @@ namespace GA{
                 int population_size, 
                 int num_generations, 
                 double mutation_rate);
+            
+            // Main function to run the optimization
+            void optimize(const double& noise_scale);
 
     };
 
