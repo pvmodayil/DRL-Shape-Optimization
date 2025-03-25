@@ -24,18 +24,25 @@ namespace GA{
     
     // Initialize the population with random noise
     Eigen::MatrixXd GeneticAlgorithm::initializePopulation(const double& noise_scale) const{
-        const int vector_size = starting_curveY.size();
-        const Eigen::ArrayXd column = Eigen::Map<const Eigen::ArrayXd>(starting_curveY.data(), vector_size, 1);
+        // Need the length for further processing
+        int vector_size = starting_curveY.size();
         
-        // Create a zero matrix as init population
-        Eigen::MatrixXd initialPopulation = Eigen::MatrixXd(vector_size, population_size);
-        for (size_t i = 0; i < population_size; ++i) {
-            initialPopulation.col(i) = column;
-        }
+        // Map the vector and create a matrix where each column is a copy of the starting curve
+        Eigen::ArrayXd column = Eigen::Map<const Eigen::ArrayXd>(starting_curveY.data(), vector_size, 1);
+        Eigen::MatrixXd initialPopulation = column.replicate(1, population_size);
+        
+        // Random uniform distribution between -1 to 1
+        Eigen::MatrixXd random_matrix = Eigen::MatrixXd::Random(vector_size, population_size); // Think about scaling to 0 to 1
 
-        initialPopulation = initialPopulation + noise_scale * Eigen::MatrixXd::Random(vector_size, population_size);
-        
-        initialPopulation = initialPopulation.array().max(arrangement.V0).matrix();
+        Eigen::MatrixXd random_noise = (
+            (noise_scale * random_matrix).array() * initialPopulation.array()
+        ).matrix(); // do element wise multiplication to scale the noise for the starting curve
+
+        // Add noise to create the initial population
+        initialPopulation = initialPopulation + random_noise;
+
+        // Limit the initial population within the boundary(V0)
+        initialPopulation = initialPopulation.array().min(arrangement.V0).matrix();
 
         return initialPopulation;
     }
@@ -62,7 +69,7 @@ namespace GA{
     void GeneticAlgorithm::optimize(const double& noise_scale){
         // Create an initial population
         Eigen::MatrixXd initialPopulation = initializePopulation(noise_scale);
-        std::cout << "Initial Population:\n" << initialPopulation << std::endl;
+        
     }
     
 

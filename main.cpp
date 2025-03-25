@@ -28,7 +28,7 @@ int main(){
         5000); // N
 
     // Genetic Algorithm class
-    GA::GeneticAlgorithm ga_problem = GA::GeneticAlgorithm(arrangement,data["g_ptsy"],data["g_ptsx"],100,1000,0.1);
+    GA::GeneticAlgorithm ga_problem = GA::GeneticAlgorithm(arrangement,data["g_ptsy"],data["g_ptsx"],100,0,0.1);
     double noise_scale = 0.1;
     ga_problem.optimize(noise_scale);
 
@@ -44,7 +44,6 @@ int main(){
         arrangement.N,
         vn,
         data["g_ptsx"]);
-    std::cout<<"Potential: "<<VF<<std::endl;
 
     double energy = MSA::calculateEnergy(arrangement.er1,
         arrangement.er2,
