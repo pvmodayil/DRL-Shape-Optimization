@@ -8,7 +8,7 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # Specify the executable target
-add_executable(microstrip_arrangement main.cpp file_io.cpp microstrip_arrangement.cpp)
+add_executable(microstrip_arrangement main.cpp file_io.cpp microstrip_arrangement.cpp genetic_algorithm.cpp)
 
 # Include directories
 include_directories(.)

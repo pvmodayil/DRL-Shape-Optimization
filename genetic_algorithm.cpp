@@ -3,6 +3,7 @@
 #include <Eigen/Dense>
 #include <vector>
 #include <random>
+#include <iostream>
 
 namespace GA{
 
@@ -61,6 +62,7 @@ namespace GA{
     void GeneticAlgorithm::optimize(const double& noise_scale){
         // Create an initial population
         Eigen::MatrixXd initialPopulation = initializePopulation(noise_scale);
+        std::cout << "Initial Population:\n" << initialPopulation << std::endl;
     }
     
 

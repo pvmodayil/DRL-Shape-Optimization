@@ -1,40 +1,8 @@
 #include <file_io.h>
 #include <microstrip_arrangement.h>
+#include<genetic_algorithm.h>
 #include <iostream>
 #include <vector>
-
-struct MicrostripArrangement {
-    const double V0;
-    const double hw_micrstr;
-    const double ht_micrstr;
-    const double hw_arra;
-    const double ht_arra;
-    const double ht_subs;
-    const double er1;
-    const double er2;
-    const int N; 
-
-    MicrostripArrangement(
-        const double V0, 
-        const double hw_micrstr, // Half-width of microstrip in meters 
-        const double ht_micrstr, // Height of microstrip in meters 
-        const double hw_arra, // Half-width of array in meters 
-        const double ht_arra, // Height of array in meters 
-        const double ht_subs, // Height of substrate in meters 
-        const double er1, // Relative permittivity of air
-        const double er2, // Relative permittivity of substrate
-        const int N) // Number of Fourier coefficients
-        : 
-        V0(V0), 
-        hw_micrstr(hw_micrstr), 
-        ht_micrstr(ht_micrstr), 
-        hw_arra(hw_arra), 
-        ht_arra(ht_arra), 
-        ht_subs(ht_subs), 
-        er1(er1), 
-        er2(er2), 
-        N(N){}
-};
 struct GeneticAlgo {
     const int N;
     const int evolution_steps;
@@ -48,16 +16,22 @@ int main(){
     std::unordered_map<std::string, std::vector<double>> data = fileio::readCSV(filename);
 
     // Microstrip arrangement 
-    MicrostripArrangement arrangement = MicrostripArrangement(1.0,
-        0.05e-3,
-        0.0,
-        1.38e-3,
-        2.76e-3,
-        0.1382e-3,
-        1.0,
-        12.9,
-        5000);
-        
+    MSA::MicrostripArrangement arrangement = MSA::MicrostripArrangement(
+        1.0, // V0
+        0.05e-3, // d
+        0.0, // t
+        1.38e-3, // a
+        2.76e-3, // b
+        0.1382e-3,// c/h
+        1.0, // er1
+        12.9, // er2
+        5000); // N
+
+    // Genetic Algorithm class
+    GA::GeneticAlgorithm ga_problem = GA::GeneticAlgorithm(arrangement,data["g_ptsy"],data["g_ptsx"],100,1000,0.1);
+    double noise_scale = 0.1;
+    ga_problem.optimize(noise_scale);
+
     // Energy calculation
     Eigen::ArrayXd vn = MSA::calculatePotentialCoeffs(arrangement.V0,
         arrangement.hw_micrstr,
