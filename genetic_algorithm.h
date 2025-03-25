@@ -8,17 +8,17 @@ namespace GA{
     class GeneticAlgorithm {
         private:
             // GA Properties
-            const Eigen::ArrayXd starting_curveY;
-            const Eigen::ArrayXd starting_curveX;
-            const int population_size;
-            const int num_generations;
-            const double mutation_rate;
-            const MSA::MicrostripArrangement arrangement;
+            Eigen::ArrayXd starting_curveY;
+            Eigen::ArrayXd starting_curveX;
+            int population_size;
+            int num_generations;
+            double mutation_rate;
+            MSA::MicrostripArrangement arrangement;
             
             // Functions
-            Eigen::MatrixXd initializePopulation(const double& noise_scale) const;
+            Eigen::MatrixXd initializePopulation(double& noise_scale) ;
 
-            double calculateFitness(Eigen::ArrayXd& individual) const;
+            double calculateFitness(Eigen::ArrayXd& individual) ;
             
         public:
             // Constructor
@@ -30,7 +30,7 @@ namespace GA{
                 double mutation_rate);
             
             // Main function to run the optimization
-            void optimize(const double& noise_scale);
+            void optimize(double& noise_scale);
 
     };
 

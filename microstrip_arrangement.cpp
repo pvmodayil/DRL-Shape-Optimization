@@ -90,8 +90,8 @@ Eigen::ArrayXd calculatePotentialCoeffs(const double& V0,
                                     const double& hw_micrstr, 
                                     const double& hw_arra, 
                                     const int& N, 
-                                    Eigen::ArrayXd& g, 
-                                    Eigen::ArrayXd& x){
+                                    const Eigen::ArrayXd& g, 
+                                    const Eigen::ArrayXd& x){
 
     // Set M as the size of the input vectors after filtering if required
     size_t M = x.size();

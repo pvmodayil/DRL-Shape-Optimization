@@ -23,7 +23,7 @@ namespace GA{
         mutation_rate(mutation_rate) {}
     
     // Initialize the population with random noise
-    Eigen::MatrixXd GeneticAlgorithm::initializePopulation(const double& noise_scale) const{
+    Eigen::MatrixXd GeneticAlgorithm::initializePopulation(double& noise_scale){
         // Need the length for further processing
         int vector_size = starting_curveY.size();
         
@@ -47,7 +47,7 @@ namespace GA{
         return initialPopulation;
     }
 
-    double GeneticAlgorithm::calculateFitness(Eigen::ArrayXd& individual) const{
+    double GeneticAlgorithm::calculateFitness(Eigen::ArrayXd& individual){
         // Energy calculation
         Eigen::ArrayXd vn = MSA::calculatePotentialCoeffs(arrangement.V0,
             arrangement.hw_micrstr,
@@ -66,7 +66,7 @@ namespace GA{
     }
 
     // Main function to run the optimization
-    void GeneticAlgorithm::optimize(const double& noise_scale){
+    void GeneticAlgorithm::optimize(double& noise_scale){
         // Create an initial population
         Eigen::MatrixXd initialPopulation = initializePopulation(noise_scale);
 
