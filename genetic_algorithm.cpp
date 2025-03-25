@@ -8,9 +8,9 @@
 namespace GA{
 
     // Constructor
-    GeneticAlgorithm::GeneticAlgorithm(const MSA::MicrostripArrangement& arrangement,
-        std::vector<double>& starting_curveY,
-        std::vector<double>& starting_curveX, 
+    GeneticAlgorithm::GeneticAlgorithm(MSA::MicrostripArrangement& arrangement,
+        Eigen::ArrayXd& starting_curveY,
+        Eigen::ArrayXd& starting_curveX, 
         int population_size, 
         int num_generations, 
         double mutation_rate)
@@ -47,7 +47,7 @@ namespace GA{
         return initialPopulation;
     }
 
-    double GeneticAlgorithm::calculateFitness(const std::vector<double>& individual) const{
+    double GeneticAlgorithm::calculateFitness(Eigen::ArrayXd& individual) const{
         // Energy calculation
         Eigen::ArrayXd vn = MSA::calculatePotentialCoeffs(arrangement.V0,
             arrangement.hw_micrstr,
@@ -69,6 +69,12 @@ namespace GA{
     void GeneticAlgorithm::optimize(const double& noise_scale){
         // Create an initial population
         Eigen::MatrixXd initialPopulation = initializePopulation(noise_scale);
+
+        // Fitness calculation
+
+        // Random Crossover and Mutate
+
+        //Repeat
         
     }
     

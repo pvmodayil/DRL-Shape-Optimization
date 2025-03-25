@@ -90,15 +90,9 @@ Eigen::ArrayXd calculatePotentialCoeffs(const double& V0,
                                     const double& hw_micrstr, 
                                     const double& hw_arra, 
                                     const int& N, 
-                                    std::vector<double> g, 
-                                    std::vector<double> x){
+                                    Eigen::ArrayXd& g, 
+                                    Eigen::ArrayXd& x){
 
-    // Check if the values passed are within the allowed range else filter
-    if(x[0] <= hw_micrstr || x.back() >= hw_arra){
-        // first pair of g,x are passed as value and the second is passed as reference so the original vectors itself will be filtered
-        filterVectors(hw_micrstr,hw_arra,g,x,g,x);
-    }
-    
     // Set M as the size of the input vectors after filtering if required
     size_t M = x.size();
     
@@ -144,19 +138,15 @@ Eigen::ArrayXd calculatePotentialCoeffs(const double& V0,
 
         return vn;
     }
-
-    // Convert the x and g vectors to arrays
-    Eigen::ArrayXd x_array = Eigen::Map<const Eigen::ArrayXd>(x.data(), x.size(), 1); // Mx1
-    Eigen::ArrayXd g_array = Eigen::Map<const Eigen::ArrayXd>(g.data(), g.size(), 1); // Mx1
     
     // Calculate cos1 and cos2 (segment takes start index and number of positions including start index to be taken)
     // Require values from second element to the last element (1 to (M-1)th)
-    Eigen::ArrayXXd cos1 = ((x_array.bottomRows(M - 1) * PI / (2 * hw_arra)).matrix() * (2 * n + 1).matrix().transpose()).array().cos(); // M-1x1 * 1xN = M-1xN
+    Eigen::ArrayXXd cos1 = ((x.bottomRows(M - 1) * PI / (2 * hw_arra)).matrix() * (2 * n + 1).matrix().transpose()).array().cos(); // M-1x1 * 1xN = M-1xN
     // Require values from first element to the second last element (0 to (M-1th))
-    Eigen::ArrayXXd cos2 = ((x_array.topRows(M - 1) * PI / (2 * hw_arra)).matrix() * (2 * n + 1).matrix().transpose()).array().cos(); // M-1x1 * 1xN = M-1xN
+    Eigen::ArrayXXd cos2 = ((x.topRows(M - 1) * PI / (2 * hw_arra)).matrix() * (2 * n + 1).matrix().transpose()).array().cos(); // M-1x1 * 1xN = M-1xN
     // Calculate fac1: g[1:M] - g[0:M-1]     
-    Eigen::ArrayXd coeff_vn2 = (g_array.bottomRows(M-1) - g_array.topRows(M-1)) /
-                        (x_array.bottomRows(M-1) - x_array.topRows(M-1)); // M-1x1
+    Eigen::ArrayXd coeff_vn2 = (g.bottomRows(M-1) - g.topRows(M-1)) /
+                        (x.bottomRows(M-1) - x.topRows(M-1)); // M-1x1
 
     // Calculate v_n2: fac1 multiplied by the difference of cosines
     Eigen::MatrixXd cos_diff = (cos1 - cos2).matrix(); // M-1xN

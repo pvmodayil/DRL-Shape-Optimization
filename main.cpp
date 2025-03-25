@@ -3,14 +3,12 @@
 #include<genetic_algorithm.h>
 #include <iostream>
 #include <vector>
-struct GeneticAlgo {
-    const int N;
-    const int evolution_steps;
-    const int population_size;
-    const int noise_scale;
-};
+
+// External Includes
+#include <Eigen/Dense>
 
 int main(){
+    // Read starting curve
     std::string filename = "../nominal.csv";
     std::cout<< "Reading g point values from: " << filename << std::endl;
     std::unordered_map<std::string, std::vector<double>> data = fileio::readCSV(filename);
@@ -27,8 +25,20 @@ int main(){
         12.9, // er2
         5000); // N
 
+    std::vector<double> x = data["g_ptsx"];
+    std::vector<double> g = data["g_ptsy"];
+    // Filter the vectors if necessary
+    if(x[0] <= arrangement.hw_micrstr || x.back() >= arrangement.hw_arra){
+        // first pair of g,x are passed as value and the second is passed as reference so the original vectors itself will be filtered
+        MSA::filterVectors(arrangement.hw_micrstr,arrangement.hw_arra,g,x,g,x);
+    }
+
+    // Convert the x and g vectors to Eigen arrays
+    Eigen::ArrayXd x_array = Eigen::Map<const Eigen::ArrayXd>(x.data(), x.size(), 1); // Mx1
+    Eigen::ArrayXd g_array = Eigen::Map<const Eigen::ArrayXd>(g.data(), g.size(), 1); // Mx1
+    
     // Genetic Algorithm class
-    GA::GeneticAlgorithm ga_problem = GA::GeneticAlgorithm(arrangement,data["g_ptsy"],data["g_ptsx"],100,0,0.1);
+    GA::GeneticAlgorithm ga_problem = GA::GeneticAlgorithm(arrangement,g_array,x_array,100,0,0.1);
     double noise_scale = 0.1;
     ga_problem.optimize(noise_scale);
 
@@ -37,8 +47,8 @@ int main(){
         arrangement.hw_micrstr,
         arrangement.hw_arra,
         arrangement.N,
-        data["g_ptsy"],
-        data["g_ptsx"]);
+        g_array,
+        x_array);
     
     Eigen::ArrayXd VF = MSA::calculatePotential(arrangement.hw_arra,
         arrangement.N,
