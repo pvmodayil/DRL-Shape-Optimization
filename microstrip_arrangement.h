@@ -60,8 +60,8 @@ Eigen::ArrayXd calculatePotentialCoeffs(const double& V0,
     const double& hw_micrstr, 
     const double& hw_arra, 
     const int& N, 
-    Eigen::ArrayXd& g, 
-    Eigen::ArrayXd& x);
+    const Eigen::ArrayXd& g, 
+    const Eigen::ArrayXd& x);
 
 Eigen::ArrayXd calculatePotential(const double& hw_arra, 
     const int& N, 

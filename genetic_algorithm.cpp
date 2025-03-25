@@ -3,6 +3,8 @@
 #include <Eigen/Dense>
 #include <vector>
 #include <random>
+#include <algorithm>
+#include <numeric> // Include this header for std::iota
 #include <iostream>
 
 namespace GA{
@@ -65,16 +67,84 @@ namespace GA{
             vn);
     }
 
+    // Select the best and worst performers
+    std::vector<size_t> GeneticAlgorithm::selectParents(const Eigen::ArrayXd& fitness_array) {
+        size_t n = fitness_array.size();
+        if (n < 4) return {}; // Not enough elements
+    
+        // Initialise the indexes
+        size_t min1 = 0, min2 = 1, max1 = 0, max2 = 1;
+    
+        // Initialize min1, min2, max1, max2
+        if (fitness_array[1] < fitness_array[0]) {
+            std::swap(min1, min2);
+        } else {
+            std::swap(max1, max2);
+        }
+    
+        for (size_t i = 2; i < n; ++i) {
+            // Update for minimum values
+            if (fitness_array[i] < fitness_array[min1]) {
+                min2 = min1;
+                min1 = i;
+            } else if (fitness_array[i] < fitness_array[min2]) {
+                min2 = i;
+            }
+    
+            // Update for maximum values
+            if (fitness_array[i] > fitness_array[max1]) {
+                max2 = max1;
+                max1 = i;
+            } else if (fitness_array[i] > fitness_array[max2]) {
+                max2 = i;
+            }
+        }
+    
+        return {min1, min2, max1, max2};
+    }
+
+    // Crossover
+    Eigen::MatrixXd GeneticAlgorithm::crossover(Eigen::ArrayXd& parent1, Eigen::ArrayXd& parent2){
+        // pass
+        Eigen::MatrixXd empty;
+        return empty;
+    }
+
+    //Mutation
+    void GeneticAlgorithm::mutate(Eigen::ArrayXd& individual, double& noise_scale){
+        // pass
+    }
+
     // Main function to run the optimization
     void GeneticAlgorithm::optimize(double& noise_scale){
+        
         // Create an initial population
-        Eigen::MatrixXd initialPopulation = initializePopulation(noise_scale);
+        Eigen::MatrixXd population = initializePopulation(noise_scale); 
+        
+        // Iterate for num_generations steps
+        for(size_t genration=0; genration<num_generations; ++genration){
+            // Fitness calculation
+            Eigen::ArrayXd fitness_array = Eigen::ArrayXd(population_size);
+            for(size_t i =0; i<population_size; ++i){
+                Eigen::ArrayXd individual = population.col(i);
+                fitness_array[i] = calculateFitness(individual);
+            }
 
-        // Fitness calculation
+            // Select potential parents and worst performers
+            std::vector<size_t> selected_indices = selectParents(fitness_array);
 
-        // Random Crossover and Mutate
+            std::cout << "Fitness Array:\n" << fitness_array << std::endl;
+            std::cout << " Top 2 Least values are: " << fitness_array[selected_indices[0]] << " , " << fitness_array[selected_indices[1]] << std::endl;
+            std::cout << " Top 2 Largest values are: " << fitness_array[selected_indices[2]] << " , " << fitness_array[selected_indices[3]] << std::endl;
+            Eigen::ArrayXd parent1 = population.col(selected_indices[0]);
+            Eigen::ArrayXd parent2 = population.col(selected_indices[1]);
 
-        //Repeat
+            //std::cout << "Fitness values: " << fitness_array << std::endl;
+            // Random Crossover and Mutate
+
+            //Repeat
+            population = initializePopulation(noise_scale); // replace least performing 2 with children
+        }
         
     }
     

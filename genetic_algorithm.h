@@ -16,9 +16,15 @@ namespace GA{
             MSA::MicrostripArrangement arrangement;
             
             // Functions
-            Eigen::MatrixXd initializePopulation(double& noise_scale) ;
+            Eigen::MatrixXd initializePopulation(double& noise_scale);
 
-            double calculateFitness(Eigen::ArrayXd& individual) ;
+            double calculateFitness(Eigen::ArrayXd& individual);
+
+            std::vector<size_t> selectParents(const Eigen::ArrayXd& arr);
+
+            Eigen::MatrixXd crossover(Eigen::ArrayXd& parent1, Eigen::ArrayXd& parent2);
+
+            void mutate(Eigen::ArrayXd& individual, double& noise_scale);
             
         public:
             // Constructor
