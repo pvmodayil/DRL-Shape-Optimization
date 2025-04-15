@@ -6,10 +6,11 @@
 #include <algorithm>
 #include <numeric> // Include this header for std::iota
 #include <iostream>
-
+#include <stdexcept>
 namespace GA{
 
     // Constructor
+    // ------------------------------------------------------
     GeneticAlgorithm::GeneticAlgorithm(MSA::MicrostripArrangement& arrangement,
         Eigen::ArrayXd& starting_curveY,
         Eigen::ArrayXd& starting_curveX, 
@@ -25,6 +26,7 @@ namespace GA{
         mutation_rate(mutation_rate) {}
     
     // Initialize the population with random noise
+    // ------------------------------------------------------
     Eigen::MatrixXd GeneticAlgorithm::initializePopulation(double& noise_scale){
         // Need the length for further processing
         int vector_size = starting_curveY.size();
@@ -49,6 +51,8 @@ namespace GA{
         return initialPopulation;
     }
 
+    // Fitness operator
+    // ------------------------------------------------------
     double GeneticAlgorithm::calculateFitness(Eigen::ArrayXd& individual){
         // Energy calculation
         Eigen::ArrayXd vn = MSA::calculatePotentialCoeffs(arrangement.V0,
@@ -66,12 +70,16 @@ namespace GA{
             arrangement.N,
             vn);
     }
-
-    // Select the best and worst performers
-    std::vector<size_t> GeneticAlgorithm::selectParents(const Eigen::ArrayXd& fitness_array) {
-        size_t n = fitness_array.size();
-        if (n < 4) return {}; // Not enough elements
     
+    // Selection operator
+    // ------------------------------------------------------
+    // Select the best and worst performers for Elitism implementation
+    std::vector<size_t> GeneticAlgorithm::selectElites(const Eigen::ArrayXd& fitness_array){
+        size_t n = fitness_array.size();
+        if (n < 4){
+            throw std::invalid_argument("Not enough individuals in population get at least 6!"); // Not enough elements
+        }
+
         // Initialise the indexes
         size_t min1 = 0, min2 = 1, max1 = 0, max2 = 1;
     
@@ -103,6 +111,51 @@ namespace GA{
         return {min1, min2, max1, max2};
     }
 
+    // Select the parents
+    std::vector<size_t> GeneticAlgorithm::selectParents(const std::vector<size_t>& elites_indices, const Eigen::ArrayXd& fitness_array) {
+        // Tournament selection
+        const int TOURNAMENT_SIZE = 3;
+        std::vector<size_t> selected_indices;
+        std::vector<size_t> candidate_indices;
+        size_t candidate_index;
+        std::random_device rd; // random number from machine to put random seed
+        std::mt19937 gen(rd());
+        std::uniform_int_distribution<> dis(0, fitness_array.size() - 1);
+
+        // Select top two out of three random selections
+        for (int i = 0; i < population_size - 2; ++i) { // Only require size - 2 as the two elites are retained
+            candidate_indices.clear(); // Start fresh
+            for (int j = 0; j < TOURNAMENT_SIZE; ++j){
+                candidate_index = dis(gen);
+                // Do not require the worst performers as candidates and not 
+                while (candidate_index == elites_indices[2] || candidate_index == elites_indices[3]) {
+                    candidate_index = dis(gen);
+                }
+
+                candidate_indices.push_back(candidate_index);
+            }
+            
+            // Find the top two candidates out of the random three      
+            size_t min1 = candidate_indices[0], min2 = candidate_indices[1];
+            if (fitness_array[min2] < fitness_array[min1]) {
+                std::swap(min1, min2);
+            }
+            if (fitness_array[candidate_indices[2]] < fitness_array[min1]) {
+                min2 = min1;
+                min1 = candidate_indices[2];
+            } else if (fitness_array[candidate_indices[2]] < fitness_array[min2]) {
+                min2 = candidate_indices[2];
+            }
+            
+            selected_indices.push_back(min1);
+            selected_indices.push_back(min2);
+        }
+
+        return selected_indices;
+    }
+
+    // Reproduction operator
+    // ------------------------------------------------------
     // Crossover
     Eigen::MatrixXd GeneticAlgorithm::crossover(Eigen::ArrayXd& parent1, Eigen::ArrayXd& parent2){
         // pass
@@ -116,6 +169,7 @@ namespace GA{
     }
 
     // Main function to run the optimization
+    // ------------------------------------------------------
     void GeneticAlgorithm::optimize(double& noise_scale){
         
         // Create an initial population
@@ -130,9 +184,15 @@ namespace GA{
                 fitness_array[i] = calculateFitness(individual);
             }
 
-            // Select potential parents and worst performers
-            std::vector<size_t> selected_indices = selectParents(fitness_array);
-
+            // Select parents
+            // Get the best and worst performers
+            std::vector<size_t> elites_indices = selectElites(fitness_array);
+            std::cout << "Elite Indices: " << elites_indices[2] << "," << elites_indices[3] << ",\n";
+            std::vector<size_t> selected_indices = selectParents(elites_indices, fitness_array);
+            std::cout << "Selected Indices: " ;
+            for (const size_t& num : selected_indices) {
+                std::cout << num << " "; // Print each element followed by a space
+            }
             std::cout << "Fitness Array:\n" << fitness_array << std::endl;
             std::cout << " Top 2 Least values are: " << fitness_array[selected_indices[0]] << " , " << fitness_array[selected_indices[1]] << std::endl;
             std::cout << " Top 2 Largest values are: " << fitness_array[selected_indices[2]] << " , " << fitness_array[selected_indices[3]] << std::endl;
