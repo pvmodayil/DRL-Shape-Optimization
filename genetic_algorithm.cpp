@@ -74,7 +74,7 @@ namespace GA{
     // Selection operator
     // ------------------------------------------------------
     // Select the best and worst performers for Elitism implementation
-    std::vector<size_t> GeneticAlgorithm::selectElits(const Eigen::ArrayXd& fitness_array){
+    std::vector<size_t> GeneticAlgorithm::selectElites(const Eigen::ArrayXd& fitness_array){
         size_t n = fitness_array.size();
         if (n < 4){
             throw std::invalid_argument("Not enough individuals in population get at least 6!"); // Not enough elements
@@ -110,11 +110,47 @@ namespace GA{
     
         return {min1, min2, max1, max2};
     }
-    // Select the best and worst performers
-    std::vector<size_t> GeneticAlgorithm::selectParents(const Eigen::ArrayXd& fitness_array) {
-        // Get the best and worst performers
-        std::vector<size_t> elits_indices = selectElits(fitness_array);
 
+    // Select the parents
+    std::vector<size_t> GeneticAlgorithm::selectParents(std::vector<size_t> elites_indices, const Eigen::ArrayXd& fitness_array) {
+        // Tournament selection
+        const int TOURNAMENT_SIZE = 3;
+        std::vector<size_t> selected_indices;
+        std::vector<size_t> candidate_indices;
+        size_t candidate_index;
+        std::random_device rd;
+        std::mt19937 gen(rd());
+        std::uniform_int_distribution<> dis(0, fitness_array.size() - 1);
+
+        // Select top two out of three random selections
+        for (int i = 0; i < population_size - 2; ++i) { // Only require size - 2 as the two elites are retained
+            for (int j = 0; j < TOURNAMENT_SIZE; ++j){
+                candidate_index = dis(gen);
+                // Do not require the worst performers as candidates
+                while (candidate_index == elites_indices[2] || candidate_index == elites_indices[3]) {
+                    candidate_index = dis(gen);
+                }
+
+                candidate_indices.push_back(candidate_index);
+            }
+            
+            // Find the top two candidates out of the random three      
+            size_t min1 = candidate_indices[0], min2 = candidate_indices[1];
+            if (fitness_array[min2] < fitness_array[min1]) {
+                std::swap(min1, min2);
+            }
+            if (fitness_array[candidate_indices[2]] < fitness_array[min1]) {
+                min2 = min1;
+                min1 = candidate_indices[2];
+            } else if (fitness_array[candidate_indices[2]] < fitness_array[min2]) {
+                min2 = candidate_indices[2];
+            }
+            
+            selected_indices.push_back(min1);
+            selected_indices.push_back(min2);
+        }
+
+        return selected_indices;
     }
 
     // Reproduction operator
@@ -147,8 +183,10 @@ namespace GA{
                 fitness_array[i] = calculateFitness(individual);
             }
 
-            // Select potential parents and worst performers
-            std::vector<size_t> selected_indices = selectParents(fitness_array);
+            // Select parents
+            // Get the best and worst performers
+            std::vector<size_t> elits_indices = selectElites(fitness_array);
+            std::vector<size_t> selected_indices = selectParents(elits_indices, fitness_array);
 
             std::cout << "Fitness Array:\n" << fitness_array << std::endl;
             std::cout << " Top 2 Least values are: " << fitness_array[selected_indices[0]] << " , " << fitness_array[selected_indices[1]] << std::endl;
