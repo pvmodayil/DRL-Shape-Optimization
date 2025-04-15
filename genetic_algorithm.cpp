@@ -10,6 +10,7 @@
 namespace GA{
 
     // Constructor
+    // ------------------------------------------------------
     GeneticAlgorithm::GeneticAlgorithm(MSA::MicrostripArrangement& arrangement,
         Eigen::ArrayXd& starting_curveY,
         Eigen::ArrayXd& starting_curveX, 
@@ -25,6 +26,7 @@ namespace GA{
         mutation_rate(mutation_rate) {}
     
     // Initialize the population with random noise
+    // ------------------------------------------------------
     Eigen::MatrixXd GeneticAlgorithm::initializePopulation(double& noise_scale){
         // Need the length for further processing
         int vector_size = starting_curveY.size();
@@ -49,6 +51,8 @@ namespace GA{
         return initialPopulation;
     }
 
+    // Fitness operator
+    // ------------------------------------------------------
     double GeneticAlgorithm::calculateFitness(Eigen::ArrayXd& individual){
         // Energy calculation
         Eigen::ArrayXd vn = MSA::calculatePotentialCoeffs(arrangement.V0,
@@ -67,6 +71,8 @@ namespace GA{
             vn);
     }
     
+    // Selection operator
+    // ------------------------------------------------------
     // Select the best and worst performers for Elitism implementation
     std::vector<size_t> GeneticAlgorithm::selectElits(const Eigen::ArrayXd& fitness_array){
         size_t n = fitness_array.size();
@@ -111,6 +117,8 @@ namespace GA{
 
     }
 
+    // Reproduction operator
+    // ------------------------------------------------------
     // Crossover
     Eigen::MatrixXd GeneticAlgorithm::crossover(Eigen::ArrayXd& parent1, Eigen::ArrayXd& parent2){
         // pass
@@ -124,6 +132,7 @@ namespace GA{
     }
 
     // Main function to run the optimization
+    // ------------------------------------------------------
     void GeneticAlgorithm::optimize(double& noise_scale){
         
         // Create an initial population
