@@ -38,7 +38,7 @@ int main(){
     Eigen::ArrayXd g_array = Eigen::Map<const Eigen::ArrayXd>(g.data(), g.size(), 1); // Mx1
     
     // Genetic Algorithm class
-    GA::GeneticAlgorithm ga_problem = GA::GeneticAlgorithm(arrangement,g_array,x_array,5,5,0.1);
+    GA::GeneticAlgorithm ga_problem = GA::GeneticAlgorithm(arrangement,g_array,x_array,6,5,0.1);
     double noise_scale = 0.1;
     ga_problem.optimize(noise_scale);
 
