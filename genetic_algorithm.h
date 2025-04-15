@@ -8,6 +8,7 @@ namespace GA{
     class GeneticAlgorithm {
         private:
             // GA Properties
+            // ------------------------------------------------------
             Eigen::ArrayXd starting_curveY;
             Eigen::ArrayXd starting_curveX;
             int population_size;
@@ -16,10 +17,13 @@ namespace GA{
             MSA::MicrostripArrangement arrangement;
             
             // Functions
+            // ------------------------------------------------------
             Eigen::MatrixXd initializePopulation(double& noise_scale);
 
             double calculateFitness(Eigen::ArrayXd& individual);
-
+            
+            // Selection Operator 
+            std::vector<size_t> selectElits(const Eigen::ArrayXd& fitness_array);
             std::vector<size_t> selectParents(const Eigen::ArrayXd& arr);
 
             Eigen::MatrixXd crossover(Eigen::ArrayXd& parent1, Eigen::ArrayXd& parent2);

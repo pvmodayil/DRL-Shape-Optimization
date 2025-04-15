@@ -66,7 +66,11 @@ namespace GA{
             arrangement.N,
             vn);
     }
-
+    
+    // Select the best and worst performers for Elitism implementation
+    std::vector<size_t> GeneticAlgorithm::selectElits(const Eigen::ArrayXd& fitness_array){
+        
+    }
     // Select the best and worst performers
     std::vector<size_t> GeneticAlgorithm::selectParents(const Eigen::ArrayXd& fitness_array) {
         size_t n = fitness_array.size();
