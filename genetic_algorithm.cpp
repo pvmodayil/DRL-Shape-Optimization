@@ -185,9 +185,13 @@ namespace GA{
 
             // Select parents
             // Get the best and worst performers
-            std::vector<size_t> elits_indices = selectElites(fitness_array);
-            std::vector<size_t> selected_indices = selectParents(elits_indices, fitness_array);
-
+            std::vector<size_t> elites_indices = selectElites(fitness_array);
+            std::cout << "Elite Indices: " << elites_indices[2] << "," << elites_indices[3] << ",\n";
+            std::vector<size_t> selected_indices = selectParents(elites_indices, fitness_array);
+            std::cout << "Selected Indices: " ;
+            for (const size_t& num : selected_indices) {
+                std::cout << num << " "; // Print each element followed by a space
+            }
             std::cout << "Fitness Array:\n" << fitness_array << std::endl;
             std::cout << " Top 2 Least values are: " << fitness_array[selected_indices[0]] << " , " << fitness_array[selected_indices[1]] << std::endl;
             std::cout << " Top 2 Largest values are: " << fitness_array[selected_indices[2]] << " , " << fitness_array[selected_indices[3]] << std::endl;
