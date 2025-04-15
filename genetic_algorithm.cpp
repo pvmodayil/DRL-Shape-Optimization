@@ -112,7 +112,7 @@ namespace GA{
     }
 
     // Select the parents
-    std::vector<size_t> GeneticAlgorithm::selectParents(std::vector<size_t> elites_indices, const Eigen::ArrayXd& fitness_array) {
+    std::vector<size_t> GeneticAlgorithm::selectParents(const std::vector<size_t>& elites_indices, const Eigen::ArrayXd& fitness_array) {
         // Tournament selection
         const int TOURNAMENT_SIZE = 3;
         std::vector<size_t> selected_indices;
