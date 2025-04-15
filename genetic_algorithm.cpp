@@ -118,18 +118,17 @@ namespace GA{
         std::vector<size_t> selected_indices;
         std::vector<size_t> candidate_indices;
         size_t candidate_index;
-        std::random_device rd;
+        std::random_device rd; // random number from machine to put random seed
         std::mt19937 gen(rd());
         std::uniform_int_distribution<> dis(0, fitness_array.size() - 1);
 
         // Select top two out of three random selections
         for (int i = 0; i < population_size - 2; ++i) { // Only require size - 2 as the two elites are retained
+            candidate_indices.clear(); // Start fresh
             for (int j = 0; j < TOURNAMENT_SIZE; ++j){
                 candidate_index = dis(gen);
                 // Do not require the worst performers as candidates and not 
-                while (candidate_index == elites_indices[2] || 
-                    candidate_index == elites_indices[3] || 
-                    (std::find(candidate_indices.begin(), candidate_indices.end(), candidate_index) != candidate_indices.end())) {
+                while (candidate_index == elites_indices[2] || candidate_index == elites_indices[3]) {
                     candidate_index = dis(gen);
                 }
 
