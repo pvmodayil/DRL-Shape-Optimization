@@ -69,15 +69,11 @@ namespace GA{
     
     // Select the best and worst performers for Elitism implementation
     std::vector<size_t> GeneticAlgorithm::selectElits(const Eigen::ArrayXd& fitness_array){
-        
-    }
-    // Select the best and worst performers
-    std::vector<size_t> GeneticAlgorithm::selectParents(const Eigen::ArrayXd& fitness_array) {
         size_t n = fitness_array.size();
         if (n < 4){
             throw std::invalid_argument("Not enough individuals in population get at least 6!"); // Not enough elements
         }
-    
+
         // Initialise the indexes
         size_t min1 = 0, min2 = 1, max1 = 0, max2 = 1;
     
@@ -107,6 +103,12 @@ namespace GA{
         }
     
         return {min1, min2, max1, max2};
+    }
+    // Select the best and worst performers
+    std::vector<size_t> GeneticAlgorithm::selectParents(const Eigen::ArrayXd& fitness_array) {
+        // Get the best and worst performers
+        std::vector<size_t> elits_indices = selectElits(fitness_array);
+
     }
 
     // Crossover
