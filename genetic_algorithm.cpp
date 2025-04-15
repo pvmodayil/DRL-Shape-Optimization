@@ -126,8 +126,10 @@ namespace GA{
         for (int i = 0; i < population_size - 2; ++i) { // Only require size - 2 as the two elites are retained
             for (int j = 0; j < TOURNAMENT_SIZE; ++j){
                 candidate_index = dis(gen);
-                // Do not require the worst performers as candidates
-                while (candidate_index == elites_indices[2] || candidate_index == elites_indices[3]) {
+                // Do not require the worst performers as candidates and not 
+                while (candidate_index == elites_indices[2] || 
+                    candidate_index == elites_indices[3] || 
+                    (std::find(candidate_indices.begin(), candidate_indices.end(), candidate_index) != candidate_indices.end())) {
                     candidate_index = dis(gen);
                 }
 
