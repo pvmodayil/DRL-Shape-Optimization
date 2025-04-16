@@ -7,6 +7,22 @@
 #include <numeric> // Include this header for std::iota
 #include <iostream>
 #include <stdexcept>
+
+void printProgressBar(int total, int current) {
+    const int barWidth = 50; // Width of the progress bar
+    float progress = static_cast<float>(current) / total;
+
+    std::cout << "[";
+    int pos = static_cast<int>(barWidth * progress);
+    for (int i = 0; i < barWidth; ++i) {
+        if (i < pos) std::cout << "=";
+        else if (i == pos) std::cout << ">";
+        else std::cout << " ";
+    }
+    std::cout << "] " << static_cast<int>(progress * 100.0f) << "%\r"; // \r returns cursor to the beginning of the line
+    std::cout.flush(); // Ensure the output is printed immediately
+}
+
 namespace GA{
 
     // Constructor
@@ -33,22 +49,22 @@ namespace GA{
         
         // Map the vector and create a matrix where each column is a copy of the starting curve
         Eigen::ArrayXd column = Eigen::Map<const Eigen::ArrayXd>(starting_curveY.data(), vector_size, 1);
-        Eigen::MatrixXd initialPopulation = column.replicate(1, population_size);
+        Eigen::MatrixXd initial_population = column.replicate(1, population_size);
         
         // Random uniform distribution between -1 to 1
         Eigen::MatrixXd random_matrix = Eigen::MatrixXd::Random(vector_size, population_size); // Think about scaling to 0 to 1
 
         Eigen::MatrixXd random_noise = (
-            (noise_scale * random_matrix).array() * initialPopulation.array()
+            (noise_scale * random_matrix).array() * initial_population.array()
         ).matrix(); // do element wise multiplication to scale the noise for the starting curve
 
         // Add noise to create the initial population
-        initialPopulation = initialPopulation + random_noise;
+        initial_population = initial_population + random_noise;
 
         // Limit the initial population within the boundary(V0)
-        initialPopulation = initialPopulation.array().min(arrangement.V0).matrix();
+        initial_population = initial_population.array().min(arrangement.V0).matrix();
 
-        return initialPopulation;
+        return initial_population;
     }
 
     // Fitness operator
@@ -123,49 +139,89 @@ namespace GA{
         std::uniform_int_distribution<> dis(0, fitness_array.size() - 1);
 
         // Select top two out of three random selections
-        for (int i = 0; i < population_size - 2; ++i) { // Only require size - 2 as the two elites are retained
-            candidate_indices.clear(); // Start fresh
-            for (int j = 0; j < TOURNAMENT_SIZE; ++j){
-                candidate_index = dis(gen);
-                // Do not require the worst performers as candidates and not 
-                while (candidate_index == elites_indices[2] || candidate_index == elites_indices[3]) {
-                    candidate_index = dis(gen);
-                }
+        candidate_indices.clear(); // Start fresh
+        for (int i = 0; i < TOURNAMENT_SIZE; ++i){
+            candidate_index = dis(gen);
+            // // Do not require the worst performers as candidates and not 
+            // while (candidate_index == elites_indices[2] || candidate_index == elites_indices[3]) {
+            //     candidate_index = dis(gen);
+            // }
 
-                candidate_indices.push_back(candidate_index);
-            }
-            
-            // Find the top two candidates out of the random three      
-            size_t min1 = candidate_indices[0], min2 = candidate_indices[1];
-            if (fitness_array[min2] < fitness_array[min1]) {
-                std::swap(min1, min2);
-            }
-            if (fitness_array[candidate_indices[2]] < fitness_array[min1]) {
-                min2 = min1;
-                min1 = candidate_indices[2];
-            } else if (fitness_array[candidate_indices[2]] < fitness_array[min2]) {
-                min2 = candidate_indices[2];
-            }
-            
-            selected_indices.push_back(min1);
-            selected_indices.push_back(min2);
+            candidate_indices.push_back(candidate_index);
         }
+        
+        // Find the top two candidates out of the random three      
+        size_t min1 = candidate_indices[0], min2 = candidate_indices[1];
+        if (fitness_array[min2] < fitness_array[min1]) {
+            std::swap(min1, min2);
+        }
+        if (fitness_array[candidate_indices[2]] < fitness_array[min1]) {
+            min2 = min1;
+            min1 = candidate_indices[2];
+        } else if (fitness_array[candidate_indices[2]] < fitness_array[min2]) {
+            min2 = candidate_indices[2];
+        }
+        
+        selected_indices.push_back(min1);
+        selected_indices.push_back(min2);
 
         return selected_indices;
     }
 
-    // Reproduction operator
-    // ------------------------------------------------------
     // Crossover
-    Eigen::MatrixXd GeneticAlgorithm::crossover(Eigen::ArrayXd& parent1, Eigen::ArrayXd& parent2){
-        // pass
-        Eigen::MatrixXd empty;
-        return empty;
+    Eigen::VectorXd GeneticAlgorithm::crossover(Eigen::VectorXd& parent1, Eigen::VectorXd& parent2){
+        
+        size_t parent_size = parent1.size();
+        // Random distribution initialize
+        std::random_device rd; // random number from machine to put random seed
+        std::mt19937 gen(rd());
+        std::uniform_int_distribution<> dis(0, parent_size - 1);
+        
+        // Choose the random crossover point
+        size_t crossover_point = dis(gen);
+
+        // Crossover
+        Eigen::VectorXd child = parent1;
+        child.segment(crossover_point, parent_size - crossover_point) = parent2.segment(crossover_point, parent_size - crossover_point);
+
+        // std::cout << "Parent 1:" << parent1 <<"\n";
+        // std::cout << "Parent 2:" << parent2 <<"\n";
+        // std::cout << "Child:" << child <<"\n";
+        
+        return child;
     }
 
-    //Mutation
-    void GeneticAlgorithm::mutate(Eigen::ArrayXd& individual, double& noise_scale){
-        // pass
+    // Reproduction operator
+    // ------------------------------------------------------
+    Eigen::MatrixXd GeneticAlgorithm::reproduce(Eigen::MatrixXd& population, Eigen::ArrayXd& fitness_array, double& noise_scale){
+        // Inits
+        std::vector<size_t> selected_indices;
+        Eigen::VectorXd parent1;
+        Eigen::VectorXd parent2;
+        size_t vector_size = starting_curveY.size();
+
+        // Create a random noise scaled matrix for mutation
+        Eigen::MatrixXd new_population = (Eigen::MatrixXd::Random(vector_size, population_size))*noise_scale;
+
+        // Get the best and worst performers
+        std::vector<size_t> elites_indices = selectElites(fitness_array);
+
+        // Reproduction cycle for population_size - 2 , need to retain the two elites
+        for (size_t i=0; i<population_size-2; ++i){
+            selected_indices = selectParents(elites_indices, fitness_array);
+            parent1 = population.col(selected_indices[0]);
+            parent2 = population.col(selected_indices[1]);
+            new_population.col(i) += crossover(parent1,parent2); // Crossover + mutate
+        }
+        
+        // Retain the elites
+        new_population.col(population_size-2) = population.col(elites_indices[0]);
+        new_population.col(population_size-1) = population.col(elites_indices[1]);
+
+        // Limit within the thresholds
+        new_population = new_population.array().min(arrangement.V0).matrix();
+        new_population = new_population.array().max(0).matrix();
+        return new_population;
     }
 
     // Main function to run the optimization
@@ -174,38 +230,23 @@ namespace GA{
         
         // Create an initial population
         Eigen::MatrixXd population = initializePopulation(noise_scale); 
-        
+        Eigen::ArrayXd fitness_array = Eigen::ArrayXd(population_size);
         // Iterate for num_generations steps
         for(size_t genration=0; genration<num_generations; ++genration){
+            printProgressBar(num_generations, genration+1);
             // Fitness calculation
-            Eigen::ArrayXd fitness_array = Eigen::ArrayXd(population_size);
             for(size_t i =0; i<population_size; ++i){
                 Eigen::ArrayXd individual = population.col(i);
                 fitness_array[i] = calculateFitness(individual);
             }
 
-            // Select parents
-            // Get the best and worst performers
-            std::vector<size_t> elites_indices = selectElites(fitness_array);
-            std::cout << "Elite Indices: " << elites_indices[2] << "," << elites_indices[3] << ",\n";
-            std::vector<size_t> selected_indices = selectParents(elites_indices, fitness_array);
-            std::cout << "Selected Indices: " ;
-            for (const size_t& num : selected_indices) {
-                std::cout << num << " "; // Print each element followed by a space
-            }
-            std::cout << "Fitness Array:\n" << fitness_array << std::endl;
-            std::cout << " Top 2 Least values are: " << fitness_array[selected_indices[0]] << " , " << fitness_array[selected_indices[1]] << std::endl;
-            std::cout << " Top 2 Largest values are: " << fitness_array[selected_indices[2]] << " , " << fitness_array[selected_indices[3]] << std::endl;
-            Eigen::ArrayXd parent1 = population.col(selected_indices[0]);
-            Eigen::ArrayXd parent2 = population.col(selected_indices[1]);
-
-            //std::cout << "Fitness values: " << fitness_array << std::endl;
-            // Random Crossover and Mutate
-
-            //Repeat
-            population = initializePopulation(noise_scale); // replace least performing 2 with children
+            // Reproduce
+            population = reproduce(population, fitness_array, noise_scale);
         }
         
+        std::vector<size_t> elites_indices = selectElites(fitness_array);
+        std::cout << "\nBest Energy: " << fitness_array[elites_indices[0]] << "\n";
+        std::cout << "Best Curve: " << population.col(elites_indices[0]) << "\n";
     }
     
 

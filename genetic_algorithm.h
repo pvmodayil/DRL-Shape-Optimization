@@ -22,13 +22,13 @@ namespace GA{
 
             double calculateFitness(Eigen::ArrayXd& individual);
             
-            // Selection Operator 
+            // Parent selection  
             std::vector<size_t> selectElites(const Eigen::ArrayXd& fitness_array);
             std::vector<size_t> selectParents(const std::vector<size_t>& elites_indices, const Eigen::ArrayXd& fitness_array);
 
-            Eigen::MatrixXd crossover(Eigen::ArrayXd& parent1, Eigen::ArrayXd& parent2);
-
-            void mutate(Eigen::ArrayXd& individual, double& noise_scale);
+            // Reproduction
+            Eigen::MatrixXd reproduce(Eigen::MatrixXd& population, Eigen::ArrayXd& fitness_array, double& noise_scale);
+            Eigen::VectorXd crossover(Eigen::VectorXd& parent1, Eigen::VectorXd& parent2);
             
         public:
             // Constructor
