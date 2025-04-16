@@ -188,6 +188,7 @@ namespace GA{
             // Get the best and worst performers
             std::vector<size_t> elites_indices = selectElites(fitness_array);
             std::cout << "Elite Indices: " << elites_indices[2] << "," << elites_indices[3] << ",\n";
+            // Select potential parents via tournament selection
             std::vector<size_t> selected_indices = selectParents(elites_indices, fitness_array);
             std::cout << "Selected Indices: " ;
             for (const size_t& num : selected_indices) {
