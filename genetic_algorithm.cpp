@@ -156,6 +156,10 @@ namespace GA{
 
     // Reproduction operator
     // ------------------------------------------------------
+    Eigen::MatrixXd GeneticAlgorithm::reproduce(Eigen::MatrixXd& population, std::vector<size_t>& selected_indices){
+
+    }
+    
     // Crossover
     Eigen::MatrixXd GeneticAlgorithm::crossover(Eigen::ArrayXd& parent1, Eigen::ArrayXd& parent2){
         // pass
