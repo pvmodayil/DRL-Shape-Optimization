@@ -27,7 +27,7 @@ namespace GA{
             std::vector<size_t> selectParents(const std::vector<size_t>& elites_indices, const Eigen::ArrayXd& fitness_array);
 
             // Reproduction
-            Eigen::MatrixXd reproduce(Eigen::MatrixXd& population, Eigen::ArrayXd& fitness_array, double& noise_scale);
+            Eigen::MatrixXd reproduce(Eigen::MatrixXd& population, Eigen::ArrayXd& fitness_array, double& noise_scale, std::vector<double>& energies);
             Eigen::VectorXd crossover(Eigen::VectorXd& parent1, Eigen::VectorXd& parent2);
             
         public:
