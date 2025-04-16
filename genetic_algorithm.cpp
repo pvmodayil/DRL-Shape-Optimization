@@ -157,14 +157,32 @@ namespace GA{
     // Reproduction operator
     // ------------------------------------------------------
     Eigen::MatrixXd GeneticAlgorithm::reproduce(Eigen::MatrixXd& population, std::vector<size_t>& selected_indices){
+        size_t parents_size = selected_indices.size();
+        for (size_t i=0; i<parents_size; i+=2){
+            Eigen::ArrayXd parent1 = population.col(selected_indices[i]);
+            Eigen::ArrayXd parent2 = population.col(selected_indices[i+1]);
 
+        }
     }
-    
+
     // Crossover
-    Eigen::MatrixXd GeneticAlgorithm::crossover(Eigen::ArrayXd& parent1, Eigen::ArrayXd& parent2){
-        // pass
-        Eigen::MatrixXd empty;
-        return empty;
+    Eigen::ArrayXd GeneticAlgorithm::crossover(Eigen::ArrayXd& parent1, Eigen::ArrayXd& parent2){
+        
+        size_t parent_size = parent1.size();
+        // Random distribution initialize
+        std::random_device rd; // random number from machine to put random seed
+        std::mt19937 gen(rd());
+        std::uniform_int_distribution<> dis(0, parent_size - 1);
+        
+        // Choose the random crossover point
+        size_t crossover_point = dis(gen);
+
+        // Crossover
+        Eigen::ArrayXd child = parent1;
+        child.segment(crossover_point, parent_size - crossover_point) = parent2.segment(crossover_point, parent_size - crossover_point);
+
+        
+        return child;
     }
 
     //Mutation
@@ -201,8 +219,6 @@ namespace GA{
             std::cout << "Fitness Array:\n" << fitness_array << std::endl;
             std::cout << " Top 2 Least values are: " << fitness_array[selected_indices[0]] << " , " << fitness_array[selected_indices[1]] << std::endl;
             std::cout << " Top 2 Largest values are: " << fitness_array[selected_indices[2]] << " , " << fitness_array[selected_indices[3]] << std::endl;
-            Eigen::ArrayXd parent1 = population.col(selected_indices[0]);
-            Eigen::ArrayXd parent2 = population.col(selected_indices[1]);
 
             //std::cout << "Fitness values: " << fitness_array << std::endl;
             // Random Crossover and Mutate

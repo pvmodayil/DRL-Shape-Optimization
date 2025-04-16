@@ -28,7 +28,7 @@ namespace GA{
 
             // Reproduction
             Eigen::MatrixXd reproduce(Eigen::MatrixXd& population, std::vector<size_t>& selected_indices);
-            Eigen::MatrixXd crossover(Eigen::ArrayXd& parent1, Eigen::ArrayXd& parent2);
+            Eigen::ArrayXd crossover(Eigen::ArrayXd& parent1, Eigen::ArrayXd& parent2);
             void mutate(Eigen::ArrayXd& individual, double& noise_scale);
             
         public:
