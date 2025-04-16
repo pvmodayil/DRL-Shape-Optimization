@@ -9,7 +9,7 @@
 
 int main(){
     // Read starting curve
-    std::string filename = "../nominal.csv";
+    std::string filename = "../result_curve.csv";
     std::cout<< "Reading g point values from: " << filename << std::endl;
     std::unordered_map<std::string, std::vector<double>> data = fileio::readCSV(filename);
 
