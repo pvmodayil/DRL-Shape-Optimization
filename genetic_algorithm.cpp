@@ -7,6 +7,22 @@
 #include <numeric> // Include this header for std::iota
 #include <iostream>
 #include <stdexcept>
+
+void printProgressBar(int total, int current) {
+    const int barWidth = 50; // Width of the progress bar
+    float progress = static_cast<float>(current) / total;
+
+    std::cout << "[";
+    int pos = static_cast<int>(barWidth * progress);
+    for (int i = 0; i < barWidth; ++i) {
+        if (i < pos) std::cout << "=";
+        else if (i == pos) std::cout << ">";
+        else std::cout << " ";
+    }
+    std::cout << "] " << static_cast<int>(progress * 100.0f) << "%\r"; // \r returns cursor to the beginning of the line
+    std::cout.flush(); // Ensure the output is printed immediately
+}
+
 namespace GA{
 
     // Constructor
@@ -126,10 +142,10 @@ namespace GA{
         candidate_indices.clear(); // Start fresh
         for (int i = 0; i < TOURNAMENT_SIZE; ++i){
             candidate_index = dis(gen);
-            // Do not require the worst performers as candidates and not 
-            while (candidate_index == elites_indices[2] || candidate_index == elites_indices[3]) {
-                candidate_index = dis(gen);
-            }
+            // // Do not require the worst performers as candidates and not 
+            // while (candidate_index == elites_indices[2] || candidate_index == elites_indices[3]) {
+            //     candidate_index = dis(gen);
+            // }
 
             candidate_indices.push_back(candidate_index);
         }
@@ -217,6 +233,7 @@ namespace GA{
         Eigen::ArrayXd fitness_array = Eigen::ArrayXd(population_size);
         // Iterate for num_generations steps
         for(size_t genration=0; genration<num_generations; ++genration){
+            printProgressBar(num_generations, genration+1);
             // Fitness calculation
             for(size_t i =0; i<population_size; ++i){
                 Eigen::ArrayXd individual = population.col(i);
@@ -228,7 +245,7 @@ namespace GA{
         }
         
         std::vector<size_t> elites_indices = selectElites(fitness_array);
-        std::cout << "Best Energy: " << fitness_array[elites_indices[0]] << "\n";
+        std::cout << "\nBest Energy: " << fitness_array[elites_indices[0]] << "\n";
         std::cout << "Best Curve: " << population.col(elites_indices[0]) << "\n";
     }
     

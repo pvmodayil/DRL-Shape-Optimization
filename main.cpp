@@ -3,6 +3,7 @@
 #include<genetic_algorithm.h>
 #include <iostream>
 #include <vector>
+#include <chrono>
 
 // External Includes
 #include <Eigen/Dense>
@@ -38,9 +39,21 @@ int main(){
     Eigen::ArrayXd g_array = Eigen::Map<const Eigen::ArrayXd>(g.data(), g.size(), 1); // Mx1
     
     // Genetic Algorithm class
-    GA::GeneticAlgorithm ga_problem = GA::GeneticAlgorithm(arrangement,g_array,x_array,10,5,0.1);
+    GA::GeneticAlgorithm ga_problem = GA::GeneticAlgorithm(arrangement,g_array,x_array,100,100,0.1);
     double noise_scale = 0.1;
+    
+    // Start timing
+    auto start = std::chrono::high_resolution_clock::now();
+    // Call the function you want to time
     ga_problem.optimize(noise_scale);
+    // Stop timing
+    auto end = std::chrono::high_resolution_clock::now();
+
+    // Calculate the duration
+    std::chrono::duration<double, std::milli> duration = end - start;
+
+    std::cout << "Execution time: " << duration.count()/1000 << " s" << std::endl;
+    
 
     // Energy calculation
     Eigen::ArrayXd vn = MSA::calculatePotentialCoeffs(arrangement.V0,
