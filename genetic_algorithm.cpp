@@ -123,50 +123,37 @@ namespace GA{
         std::uniform_int_distribution<> dis(0, fitness_array.size() - 1);
 
         // Select top two out of three random selections
-        for (int i = 0; i < population_size - 2; ++i) { // Only require size - 2 as the two elites are retained
-            candidate_indices.clear(); // Start fresh
-            for (int j = 0; j < TOURNAMENT_SIZE; ++j){
+        candidate_indices.clear(); // Start fresh
+        for (int i = 0; i < TOURNAMENT_SIZE; ++i){
+            candidate_index = dis(gen);
+            // Do not require the worst performers as candidates and not 
+            while (candidate_index == elites_indices[2] || candidate_index == elites_indices[3]) {
                 candidate_index = dis(gen);
-                // Do not require the worst performers as candidates and not 
-                while (candidate_index == elites_indices[2] || candidate_index == elites_indices[3]) {
-                    candidate_index = dis(gen);
-                }
+            }
 
-                candidate_indices.push_back(candidate_index);
-            }
-            
-            // Find the top two candidates out of the random three      
-            size_t min1 = candidate_indices[0], min2 = candidate_indices[1];
-            if (fitness_array[min2] < fitness_array[min1]) {
-                std::swap(min1, min2);
-            }
-            if (fitness_array[candidate_indices[2]] < fitness_array[min1]) {
-                min2 = min1;
-                min1 = candidate_indices[2];
-            } else if (fitness_array[candidate_indices[2]] < fitness_array[min2]) {
-                min2 = candidate_indices[2];
-            }
-            
-            selected_indices.push_back(min1);
-            selected_indices.push_back(min2);
+            candidate_indices.push_back(candidate_index);
         }
+        
+        // Find the top two candidates out of the random three      
+        size_t min1 = candidate_indices[0], min2 = candidate_indices[1];
+        if (fitness_array[min2] < fitness_array[min1]) {
+            std::swap(min1, min2);
+        }
+        if (fitness_array[candidate_indices[2]] < fitness_array[min1]) {
+            min2 = min1;
+            min1 = candidate_indices[2];
+        } else if (fitness_array[candidate_indices[2]] < fitness_array[min2]) {
+            min2 = candidate_indices[2];
+        }
+        
+        selected_indices.push_back(min1);
+        selected_indices.push_back(min2);
 
         return selected_indices;
     }
 
-    // Reproduction operator
-    // ------------------------------------------------------
-    Eigen::MatrixXd GeneticAlgorithm::reproduce(Eigen::MatrixXd& population, std::vector<size_t>& selected_indices){
-        size_t parents_size = selected_indices.size();
-        for (size_t i=0; i<parents_size; i+=2){
-            Eigen::ArrayXd parent1 = population.col(selected_indices[i]);
-            Eigen::ArrayXd parent2 = population.col(selected_indices[i+1]);
-
-        }
-    }
-
     // Crossover
-    Eigen::ArrayXd GeneticAlgorithm::crossover(Eigen::ArrayXd& parent1, Eigen::ArrayXd& parent2){
+    Eigen::VectorXd GeneticAlgorithm::crossover(Eigen::VectorXd& parent1, Eigen::VectorXd& parent2){
         
         size_t parent_size = parent1.size();
         // Random distribution initialize
@@ -178,16 +165,41 @@ namespace GA{
         size_t crossover_point = dis(gen);
 
         // Crossover
-        Eigen::ArrayXd child = parent1;
+        Eigen::VectorXd child = parent1;
         child.segment(crossover_point, parent_size - crossover_point) = parent2.segment(crossover_point, parent_size - crossover_point);
 
         
         return child;
     }
 
-    //Mutation
-    void GeneticAlgorithm::mutate(Eigen::ArrayXd& individual, double& noise_scale){
-        // pass
+    // Reproduction operator
+    // ------------------------------------------------------
+    Eigen::MatrixXd GeneticAlgorithm::reproduce(Eigen::MatrixXd& population, Eigen::ArrayXd& fitness_array, double& noise_scale){
+        // Inits
+        std::vector<size_t> selected_indices;
+        Eigen::VectorXd parent1;
+        Eigen::VectorXd parent2;
+        size_t vector_size = starting_curveY.size();
+
+        // Create a random noise scaled matrix for mutation
+        Eigen::MatrixXd new_population = (Eigen::MatrixXd::Random(vector_size, population_size))*noise_scale;
+
+        // Get the best and worst performers
+        std::vector<size_t> elites_indices = selectElites(fitness_array);
+
+        // Reproduction cycle for population_size - 2 , need to retain the two elites
+        for (size_t i=0; i<population_size-2; ++i){
+            selected_indices = selectParents(elites_indices, fitness_array);
+            parent1 = population.col(selected_indices[0]);
+            parent2 = population.col(selected_indices[1]);
+            new_population.col(i) += crossover(parent1,parent2); // Crossover + mutate
+        }
+        
+        // Retain the elites
+        new_population.col(population_size-2) = population.col(elites_indices[0]);
+        new_population.col(population_size-1) = population.col(elites_indices[1]);
+
+        return new_population;
     }
 
     // Main function to run the optimization
