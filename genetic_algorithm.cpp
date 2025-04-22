@@ -52,12 +52,12 @@ namespace GA{
         Eigen::ArrayXd column = Eigen::Map<const Eigen::ArrayXd>(starting_curveY.data(), vector_size, 1);
         Eigen::MatrixXd initial_population = column.replicate(1, population_size);
         
-        // Random uniform distribution between -1 to 1
-        Eigen::MatrixXd random_matrix = Eigen::MatrixXd::Random(vector_size, population_size); // Think about scaling to 0 to 1
-
+        // Random uniform distribution between -1 to 1 scaled to 0 to 1 and further scaled to create random noise
         Eigen::MatrixXd random_noise = (
-            (noise_scale * random_matrix).array() * initial_population.array()
-        ).matrix(); // do element wise multiplication to scale the noise for the starting curve
+            (noise_scale * 
+                0.5 * (Eigen::MatrixXd::Ones(vector_size, population_size) + Eigen::MatrixXd::Random(vector_size, population_size))
+            ).array() * initial_population.array()
+        ).matrix();
 
         // Add noise to create the initial population
         initial_population = initial_population + random_noise;
@@ -208,7 +208,7 @@ namespace GA{
         // Get the best and worst performers
         std::vector<size_t> elites_indices = selectElites(fitness_array);
         energies.push_back(fitness_array[elites_indices[0]]);
-        std::cout << "Best Curve: " << population.col(elites_indices[0]) << "\n";
+        // std::cout << "Best Curve: " << population.col(elites_indices[0]) << "\n";
         
         // Reproduction cycle for population_size - 2 , need to retain the two elites
         // #pragma omp parallel for
