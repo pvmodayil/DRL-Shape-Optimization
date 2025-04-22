@@ -138,7 +138,7 @@ namespace GA{
         // Random operator
         std::random_device rd; // random number from machine to put random seed
         std::mt19937 gen(rd());
-        std::uniform_int_distribution<> dis(0, fitness_array.size() - 1);
+        std::uniform_int_distribution<> dis(0, population_size - 1);
 
         // Do tournament selection
         candidate_index1 = dis(gen);
