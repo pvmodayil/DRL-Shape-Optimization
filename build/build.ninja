@@ -12,7 +12,7 @@
 
 # =============================================================================
 # Project: ShapeOptimization
-# Configurations: 
+# Configurations: Release
 # =============================================================================
 
 #############################################
@@ -20,6 +20,11 @@
 
 ninja_required_version = 1.5
 
+
+#############################################
+# Set configuration variable for custom commands.
+
+CONFIGURATION = Release
 # =============================================================================
 # Include auxiliary files.
 
@@ -44,30 +49,30 @@ cmake_ninja_workdir = C$:/Users/pvmod/InformationProcessingLab/02_ShapeOptimisat
 
 build cmake_object_order_depends_target_microstrip_arrangement: phony || .
 
-build CMakeFiles/microstrip_arrangement.dir/main.cpp.obj: CXX_COMPILER__microstrip_arrangement_unscanned_ C$:/Users/pvmod/InformationProcessingLab/02_ShapeOptimisation/08_GA_CPP/main.cpp || cmake_object_order_depends_target_microstrip_arrangement
+build CMakeFiles/microstrip_arrangement.dir/main.cpp.obj: CXX_COMPILER__microstrip_arrangement_unscanned_Release C$:/Users/pvmod/InformationProcessingLab/02_ShapeOptimisation/08_GA_CPP/main.cpp || cmake_object_order_depends_target_microstrip_arrangement
   DEP_FILE = CMakeFiles\microstrip_arrangement.dir\main.cpp.obj.d
-  FLAGS = -std=gnu++20
+  FLAGS = -O3 -DNDEBUG -std=gnu++20
   INCLUDES = -IC:/Users/pvmod/InformationProcessingLab/02_ShapeOptimisation/08_GA_CPP/.
   OBJECT_DIR = CMakeFiles\microstrip_arrangement.dir
   OBJECT_FILE_DIR = CMakeFiles\microstrip_arrangement.dir
 
-build CMakeFiles/microstrip_arrangement.dir/file_io.cpp.obj: CXX_COMPILER__microstrip_arrangement_unscanned_ C$:/Users/pvmod/InformationProcessingLab/02_ShapeOptimisation/08_GA_CPP/file_io.cpp || cmake_object_order_depends_target_microstrip_arrangement
+build CMakeFiles/microstrip_arrangement.dir/file_io.cpp.obj: CXX_COMPILER__microstrip_arrangement_unscanned_Release C$:/Users/pvmod/InformationProcessingLab/02_ShapeOptimisation/08_GA_CPP/file_io.cpp || cmake_object_order_depends_target_microstrip_arrangement
   DEP_FILE = CMakeFiles\microstrip_arrangement.dir\file_io.cpp.obj.d
-  FLAGS = -std=gnu++20
+  FLAGS = -O3 -DNDEBUG -std=gnu++20
   INCLUDES = -IC:/Users/pvmod/InformationProcessingLab/02_ShapeOptimisation/08_GA_CPP/.
   OBJECT_DIR = CMakeFiles\microstrip_arrangement.dir
   OBJECT_FILE_DIR = CMakeFiles\microstrip_arrangement.dir
 
-build CMakeFiles/microstrip_arrangement.dir/microstrip_arrangement.cpp.obj: CXX_COMPILER__microstrip_arrangement_unscanned_ C$:/Users/pvmod/InformationProcessingLab/02_ShapeOptimisation/08_GA_CPP/microstrip_arrangement.cpp || cmake_object_order_depends_target_microstrip_arrangement
+build CMakeFiles/microstrip_arrangement.dir/microstrip_arrangement.cpp.obj: CXX_COMPILER__microstrip_arrangement_unscanned_Release C$:/Users/pvmod/InformationProcessingLab/02_ShapeOptimisation/08_GA_CPP/microstrip_arrangement.cpp || cmake_object_order_depends_target_microstrip_arrangement
   DEP_FILE = CMakeFiles\microstrip_arrangement.dir\microstrip_arrangement.cpp.obj.d
-  FLAGS = -std=gnu++20
+  FLAGS = -O3 -DNDEBUG -std=gnu++20
   INCLUDES = -IC:/Users/pvmod/InformationProcessingLab/02_ShapeOptimisation/08_GA_CPP/.
   OBJECT_DIR = CMakeFiles\microstrip_arrangement.dir
   OBJECT_FILE_DIR = CMakeFiles\microstrip_arrangement.dir
 
-build CMakeFiles/microstrip_arrangement.dir/genetic_algorithm.cpp.obj: CXX_COMPILER__microstrip_arrangement_unscanned_ C$:/Users/pvmod/InformationProcessingLab/02_ShapeOptimisation/08_GA_CPP/genetic_algorithm.cpp || cmake_object_order_depends_target_microstrip_arrangement
+build CMakeFiles/microstrip_arrangement.dir/genetic_algorithm.cpp.obj: CXX_COMPILER__microstrip_arrangement_unscanned_Release C$:/Users/pvmod/InformationProcessingLab/02_ShapeOptimisation/08_GA_CPP/genetic_algorithm.cpp || cmake_object_order_depends_target_microstrip_arrangement
   DEP_FILE = CMakeFiles\microstrip_arrangement.dir\genetic_algorithm.cpp.obj.d
-  FLAGS = -std=gnu++20
+  FLAGS = -O3 -DNDEBUG -std=gnu++20
   INCLUDES = -IC:/Users/pvmod/InformationProcessingLab/02_ShapeOptimisation/08_GA_CPP/.
   OBJECT_DIR = CMakeFiles\microstrip_arrangement.dir
   OBJECT_FILE_DIR = CMakeFiles\microstrip_arrangement.dir
@@ -80,7 +85,8 @@ build CMakeFiles/microstrip_arrangement.dir/genetic_algorithm.cpp.obj: CXX_COMPI
 #############################################
 # Link the executable microstrip_arrangement.exe
 
-build microstrip_arrangement.exe: CXX_EXECUTABLE_LINKER__microstrip_arrangement_ CMakeFiles/microstrip_arrangement.dir/main.cpp.obj CMakeFiles/microstrip_arrangement.dir/file_io.cpp.obj CMakeFiles/microstrip_arrangement.dir/microstrip_arrangement.cpp.obj CMakeFiles/microstrip_arrangement.dir/genetic_algorithm.cpp.obj
+build microstrip_arrangement.exe: CXX_EXECUTABLE_LINKER__microstrip_arrangement_Release CMakeFiles/microstrip_arrangement.dir/main.cpp.obj CMakeFiles/microstrip_arrangement.dir/file_io.cpp.obj CMakeFiles/microstrip_arrangement.dir/microstrip_arrangement.cpp.obj CMakeFiles/microstrip_arrangement.dir/genetic_algorithm.cpp.obj
+  FLAGS = -O3 -DNDEBUG
   LINK_LIBRARIES = -lkernel32 -luser32 -lgdi32 -lwinspool -lshell32 -lole32 -loleaut32 -luuid -lcomdlg32 -ladvapi32
   OBJECT_DIR = CMakeFiles\microstrip_arrangement.dir
   POST_BUILD = cd .
