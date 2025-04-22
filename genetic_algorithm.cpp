@@ -47,7 +47,7 @@ namespace GA{
     // ------------------------------------------------------
     Eigen::MatrixXd GeneticAlgorithm::initializePopulation(double& noise_scale){
         // Need the length for further processing
-        int vector_size = starting_curveY.size();
+        size_t vector_size = starting_curveY.size();
         
         // Map the vector and create a matrix where each column is a copy of the starting curve
         Eigen::ArrayXd column = Eigen::Map<const Eigen::ArrayXd>(starting_curveY.data(), vector_size, 1);
@@ -182,7 +182,7 @@ namespace GA{
 
     // Reproduction operator
     // ------------------------------------------------------
-    Eigen::MatrixXd GeneticAlgorithm::reproduce(Eigen::MatrixXd& population, Eigen::ArrayXd& fitness_array, double& noise_scale, std::vector<double>& energies){
+    Eigen::MatrixXd GeneticAlgorithm::reproduce(Eigen::MatrixXd& population, Eigen::ArrayXd& fitness_array, double& noise_scale){
         // Inits
         std::vector<size_t> selected_indices;
         Eigen::VectorXd parent1;
@@ -211,7 +211,7 @@ namespace GA{
     // ------------------------------------------------------
     void GeneticAlgorithm::optimize(double& noise_scale){
         
-        std::vector<double> energies;
+        size_t vector_size = starting_curveY.size();
         // Create an initial population
         Eigen::MatrixXd population = initializePopulation(noise_scale); 
         Eigen::ArrayXd fitness_array = Eigen::ArrayXd(population_size);
@@ -221,18 +221,13 @@ namespace GA{
             // Fitness calculation
             // #pragma omp parallel for
             for(size_t i=0; i<population_size; ++i){
-                Eigen::ArrayXd individual = population.col(i);
+                Eigen::ArrayXd individual = Eigen::Map<Eigen::ArrayXd>(population.col(i).data(), vector_size);
                 fitness_array[i] = calculateFitness(individual);
             }
 
             // Reproduce
-            population = reproduce(population, fitness_array, noise_scale, energies);
+            population = reproduce(population, fitness_array, noise_scale);
         }
-        std::cout << "Energy values: ";
-        for (auto energy:energies){
-            std::cout << energy << "," ;
-        }
-        std::cout << "\n";
 
         std::vector<size_t> elites_indices = selectElites(fitness_array);
         std::cout << "\nBest Energy: " << fitness_array[elites_indices[0]] << "\n";
