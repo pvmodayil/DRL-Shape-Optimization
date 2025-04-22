@@ -24,7 +24,7 @@ int main(){
         0.1382e-3,// c/h
         1.0, // er1
         12.9, // er2
-        5000); // N
+        2000); // N
 
     std::vector<double> x = data["g_ptsx"];
     std::vector<double> g = data["g_ptsy"];

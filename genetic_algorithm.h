@@ -3,6 +3,7 @@
 
 #include <microstrip_arrangement.h>
 #include <vector>
+#include <tuple>
 
 namespace GA{
     class GeneticAlgorithm {
@@ -27,8 +28,8 @@ namespace GA{
             size_t selectParent(const Eigen::ArrayXd& fitness_array);
 
             // Reproduction
-            Eigen::MatrixXd reproduce(Eigen::MatrixXd& population, Eigen::ArrayXd& fitness_array, double& noise_scale, std::vector<double>& energies);
-            Eigen::VectorXd crossover(Eigen::VectorXd& parent1, Eigen::VectorXd& parent2);
+            Eigen::MatrixXd reproduce(Eigen::MatrixXd& population, Eigen::ArrayXd& fitness_array, double& noise_scale);
+            std::tuple<Eigen::VectorXd, Eigen::VectorXd> crossover(Eigen::VectorXd& parent1, Eigen::VectorXd& parent2);
             
         public:
             // Constructor
