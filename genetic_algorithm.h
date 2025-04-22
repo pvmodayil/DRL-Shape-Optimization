@@ -24,7 +24,7 @@ namespace GA{
             
             // Parent selection  
             std::vector<size_t> selectElites(const Eigen::ArrayXd& fitness_array);
-            std::vector<size_t> selectParents(const std::vector<size_t>& elites_indices, const Eigen::ArrayXd& fitness_array);
+            size_t selectParent(const Eigen::ArrayXd& fitness_array);
 
             // Reproduction
             Eigen::MatrixXd reproduce(Eigen::MatrixXd& population, Eigen::ArrayXd& fitness_array, double& noise_scale, std::vector<double>& energies);

@@ -129,44 +129,25 @@ namespace GA{
     }
 
     // Select the parents
-    std::vector<size_t> GeneticAlgorithm::selectParents(const std::vector<size_t>& elites_indices, const Eigen::ArrayXd& fitness_array) {
-        // Tournament selection
-        const int TOURNAMENT_SIZE = 3;
-        std::vector<size_t> selected_indices;
-        std::vector<size_t> candidate_indices;
-        size_t candidate_index;
+    size_t GeneticAlgorithm::selectParent(const Eigen::ArrayXd& fitness_array) {
+        // Tournament selection with size 2
+        size_t candidate_index1;
+        size_t candidate_index2;
+
+        // Random operator
         std::random_device rd; // random number from machine to put random seed
         std::mt19937 gen(rd());
         std::uniform_int_distribution<> dis(0, fitness_array.size() - 1);
 
-        // Select top two out of three random selections
-        candidate_indices.clear(); // Start fresh
-        for (int i = 0; i < TOURNAMENT_SIZE; ++i){
-            candidate_index = dis(gen);
-            // // Do not require the worst performers as candidates and not 
-            // while (candidate_index == elites_indices[2] || candidate_index == elites_indices[3]) {
-            //     candidate_index = dis(gen);
-            // }
+        // Do tournament selection
+        candidate_index1 = dis(gen);
+        candidate_index2 = dis(gen);
 
-            candidate_indices.push_back(candidate_index);
+        if (fitness_array[candidate_index2] < fitness_array[candidate_index1]) {
+            std::swap(candidate_index1, candidate_index2);
         }
-        
-        // Find the top two candidates out of the random three      
-        size_t min1 = candidate_indices[0], min2 = candidate_indices[1];
-        if (fitness_array[min2] < fitness_array[min1]) {
-            std::swap(min1, min2);
-        }
-        if (fitness_array[candidate_indices[2]] < fitness_array[min1]) {
-            min2 = min1;
-            min1 = candidate_indices[2];
-        } else if (fitness_array[candidate_indices[2]] < fitness_array[min2]) {
-            min2 = candidate_indices[2];
-        }
-        
-        selected_indices.push_back(min1);
-        selected_indices.push_back(min2);
 
-        return selected_indices;
+        return candidate_index1;
     }
 
     // Crossover
@@ -185,10 +166,6 @@ namespace GA{
         Eigen::VectorXd child = parent1;
         child.segment(crossover_point, parent_size - crossover_point) = parent2.segment(crossover_point, parent_size - crossover_point);
 
-        // std::cout << "Parent 1:" << parent1 <<"\n";
-        // std::cout << "Parent 2:" << parent2 <<"\n";
-        // std::cout << "Child:" << child <<"\n";
-        
         return child;
     }
 
@@ -202,8 +179,11 @@ namespace GA{
         size_t vector_size = starting_curveY.size();
 
         // Create a random noise scaled matrix for mutation
-        Eigen::MatrixXd new_population = ((Eigen::MatrixXd::Random(vector_size, population_size)*noise_scale).array() * 
-        population.array()).matrix(); // do element wise multiplication to scale the noise for the curve
+        Eigen::MatrixXd new_population = (
+            (noise_scale * 
+                0.5 * (Eigen::MatrixXd::Ones(vector_size, population_size) + Eigen::MatrixXd::Random(vector_size, population_size))
+            ).array() * population.array()
+        ).matrix(); // do element wise multiplication to scale the noise for the curve
 
         // Get the best and worst performers
         std::vector<size_t> elites_indices = selectElites(fitness_array);
@@ -212,16 +192,13 @@ namespace GA{
         
         // Reproduction cycle for population_size - 2 , need to retain the two elites
         // #pragma omp parallel for
-        for (size_t i=0; i<population_size; ++i){
-            selected_indices = selectParents(elites_indices, fitness_array);
-            parent1 = population.col(selected_indices[0]);
-            parent2 = population.col(selected_indices[1]);
+        for (size_t i=0; i<population_size; i+=2){
+            parent1 = population.col(selectParent(fitness_array));
+            parent2 = population.col(selectParent(fitness_array));
             new_population.col(i) += crossover(parent1,parent2); // Crossover + mutate
+            new_population.col(i+1) += crossover(parent2,parent1); // Crossover + mutate
+
         }
-        
-        // Retain the elites
-        // new_population.col(population_size-2) = population.col(elites_indices[0]);
-        // new_population.col(population_size-1) = population.col(elites_indices[1]);
 
         // Limit within the thresholds
         new_population = new_population.array().min(arrangement.V0).matrix();
