@@ -51,28 +51,28 @@ build cmake_object_order_depends_target_microstrip_arrangement: phony || .
 
 build CMakeFiles/microstrip_arrangement.dir/main.cpp.obj: CXX_COMPILER__microstrip_arrangement_unscanned_Release C$:/Users/pvmod/InformationProcessingLab/02_ShapeOptimisation/08_GA_CPP/main.cpp || cmake_object_order_depends_target_microstrip_arrangement
   DEP_FILE = CMakeFiles\microstrip_arrangement.dir\main.cpp.obj.d
-  FLAGS = -O3 -DNDEBUG -std=gnu++20
+  FLAGS = -O3 -DNDEBUG -std=gnu++20 -fopenmp
   INCLUDES = -IC:/Users/pvmod/InformationProcessingLab/02_ShapeOptimisation/08_GA_CPP/.
   OBJECT_DIR = CMakeFiles\microstrip_arrangement.dir
   OBJECT_FILE_DIR = CMakeFiles\microstrip_arrangement.dir
 
 build CMakeFiles/microstrip_arrangement.dir/file_io.cpp.obj: CXX_COMPILER__microstrip_arrangement_unscanned_Release C$:/Users/pvmod/InformationProcessingLab/02_ShapeOptimisation/08_GA_CPP/file_io.cpp || cmake_object_order_depends_target_microstrip_arrangement
   DEP_FILE = CMakeFiles\microstrip_arrangement.dir\file_io.cpp.obj.d
-  FLAGS = -O3 -DNDEBUG -std=gnu++20
+  FLAGS = -O3 -DNDEBUG -std=gnu++20 -fopenmp
   INCLUDES = -IC:/Users/pvmod/InformationProcessingLab/02_ShapeOptimisation/08_GA_CPP/.
   OBJECT_DIR = CMakeFiles\microstrip_arrangement.dir
   OBJECT_FILE_DIR = CMakeFiles\microstrip_arrangement.dir
 
 build CMakeFiles/microstrip_arrangement.dir/microstrip_arrangement.cpp.obj: CXX_COMPILER__microstrip_arrangement_unscanned_Release C$:/Users/pvmod/InformationProcessingLab/02_ShapeOptimisation/08_GA_CPP/microstrip_arrangement.cpp || cmake_object_order_depends_target_microstrip_arrangement
   DEP_FILE = CMakeFiles\microstrip_arrangement.dir\microstrip_arrangement.cpp.obj.d
-  FLAGS = -O3 -DNDEBUG -std=gnu++20
+  FLAGS = -O3 -DNDEBUG -std=gnu++20 -fopenmp
   INCLUDES = -IC:/Users/pvmod/InformationProcessingLab/02_ShapeOptimisation/08_GA_CPP/.
   OBJECT_DIR = CMakeFiles\microstrip_arrangement.dir
   OBJECT_FILE_DIR = CMakeFiles\microstrip_arrangement.dir
 
 build CMakeFiles/microstrip_arrangement.dir/genetic_algorithm.cpp.obj: CXX_COMPILER__microstrip_arrangement_unscanned_Release C$:/Users/pvmod/InformationProcessingLab/02_ShapeOptimisation/08_GA_CPP/genetic_algorithm.cpp || cmake_object_order_depends_target_microstrip_arrangement
   DEP_FILE = CMakeFiles\microstrip_arrangement.dir\genetic_algorithm.cpp.obj.d
-  FLAGS = -O3 -DNDEBUG -std=gnu++20
+  FLAGS = -O3 -DNDEBUG -std=gnu++20 -fopenmp
   INCLUDES = -IC:/Users/pvmod/InformationProcessingLab/02_ShapeOptimisation/08_GA_CPP/.
   OBJECT_DIR = CMakeFiles\microstrip_arrangement.dir
   OBJECT_FILE_DIR = CMakeFiles\microstrip_arrangement.dir
@@ -85,9 +85,9 @@ build CMakeFiles/microstrip_arrangement.dir/genetic_algorithm.cpp.obj: CXX_COMPI
 #############################################
 # Link the executable microstrip_arrangement.exe
 
-build microstrip_arrangement.exe: CXX_EXECUTABLE_LINKER__microstrip_arrangement_Release CMakeFiles/microstrip_arrangement.dir/main.cpp.obj CMakeFiles/microstrip_arrangement.dir/file_io.cpp.obj CMakeFiles/microstrip_arrangement.dir/microstrip_arrangement.cpp.obj CMakeFiles/microstrip_arrangement.dir/genetic_algorithm.cpp.obj
+build microstrip_arrangement.exe: CXX_EXECUTABLE_LINKER__microstrip_arrangement_Release CMakeFiles/microstrip_arrangement.dir/main.cpp.obj CMakeFiles/microstrip_arrangement.dir/file_io.cpp.obj CMakeFiles/microstrip_arrangement.dir/microstrip_arrangement.cpp.obj CMakeFiles/microstrip_arrangement.dir/genetic_algorithm.cpp.obj | C$:/mingw64/lib/libgomp.dll.a C$:/mingw64/x86_64-w64-mingw32/lib/libmingwthrd.a
   FLAGS = -O3 -DNDEBUG
-  LINK_LIBRARIES = -lkernel32 -luser32 -lgdi32 -lwinspool -lshell32 -lole32 -loleaut32 -luuid -lcomdlg32 -ladvapi32
+  LINK_LIBRARIES = C:/mingw64/lib/libgomp.dll.a  C:/mingw64/x86_64-w64-mingw32/lib/libmingwthrd.a  -lkernel32 -luser32 -lgdi32 -lwinspool -lshell32 -lole32 -loleaut32 -luuid -lcomdlg32 -ladvapi32
   OBJECT_DIR = CMakeFiles\microstrip_arrangement.dir
   POST_BUILD = cd .
   PRE_LINK = cd .
@@ -140,14 +140,14 @@ build all: phony microstrip_arrangement.exe
 #############################################
 # Re-run CMake if any of its inputs changed.
 
-build build.ninja: RERUN_CMAKE | C$:/Users/pvmod/InformationProcessingLab/02_ShapeOptimisation/08_GA_CPP/CMakeLists.txt C$:/mingw64/share/cmake-3.30/Modules/CMakeCInformation.cmake C$:/mingw64/share/cmake-3.30/Modules/CMakeCXXInformation.cmake C$:/mingw64/share/cmake-3.30/Modules/CMakeCommonLanguageInclude.cmake C$:/mingw64/share/cmake-3.30/Modules/CMakeGenericSystem.cmake C$:/mingw64/share/cmake-3.30/Modules/CMakeInitializeConfigs.cmake C$:/mingw64/share/cmake-3.30/Modules/CMakeLanguageInformation.cmake C$:/mingw64/share/cmake-3.30/Modules/CMakeRCInformation.cmake C$:/mingw64/share/cmake-3.30/Modules/CMakeSystemSpecificInformation.cmake C$:/mingw64/share/cmake-3.30/Modules/CMakeSystemSpecificInitialize.cmake C$:/mingw64/share/cmake-3.30/Modules/Compiler/CMakeCommonCompilerMacros.cmake C$:/mingw64/share/cmake-3.30/Modules/Compiler/GNU-C.cmake C$:/mingw64/share/cmake-3.30/Modules/Compiler/GNU-CXX.cmake C$:/mingw64/share/cmake-3.30/Modules/Compiler/GNU.cmake C$:/mingw64/share/cmake-3.30/Modules/Platform/Windows-GNU-C-ABI.cmake C$:/mingw64/share/cmake-3.30/Modules/Platform/Windows-GNU-C.cmake C$:/mingw64/share/cmake-3.30/Modules/Platform/Windows-GNU-CXX-ABI.cmake C$:/mingw64/share/cmake-3.30/Modules/Platform/Windows-GNU-CXX.cmake C$:/mingw64/share/cmake-3.30/Modules/Platform/Windows-GNU.cmake C$:/mingw64/share/cmake-3.30/Modules/Platform/Windows-Initialize.cmake C$:/mingw64/share/cmake-3.30/Modules/Platform/Windows-windres.cmake C$:/mingw64/share/cmake-3.30/Modules/Platform/Windows.cmake C$:/mingw64/share/cmake-3.30/Modules/Platform/WindowsPaths.cmake CMakeCache.txt CMakeFiles/3.30.2/CMakeCCompiler.cmake CMakeFiles/3.30.2/CMakeCXXCompiler.cmake CMakeFiles/3.30.2/CMakeRCCompiler.cmake CMakeFiles/3.30.2/CMakeSystem.cmake
+build build.ninja: RERUN_CMAKE | C$:/Users/pvmod/InformationProcessingLab/02_ShapeOptimisation/08_GA_CPP/CMakeLists.txt C$:/mingw64/share/cmake-3.30/Modules/CMakeCInformation.cmake C$:/mingw64/share/cmake-3.30/Modules/CMakeCXXInformation.cmake C$:/mingw64/share/cmake-3.30/Modules/CMakeCommonLanguageInclude.cmake C$:/mingw64/share/cmake-3.30/Modules/CMakeGenericSystem.cmake C$:/mingw64/share/cmake-3.30/Modules/CMakeInitializeConfigs.cmake C$:/mingw64/share/cmake-3.30/Modules/CMakeLanguageInformation.cmake C$:/mingw64/share/cmake-3.30/Modules/CMakeParseImplicitLinkInfo.cmake C$:/mingw64/share/cmake-3.30/Modules/CMakeRCInformation.cmake C$:/mingw64/share/cmake-3.30/Modules/CMakeSystemSpecificInformation.cmake C$:/mingw64/share/cmake-3.30/Modules/CMakeSystemSpecificInitialize.cmake C$:/mingw64/share/cmake-3.30/Modules/Compiler/CMakeCommonCompilerMacros.cmake C$:/mingw64/share/cmake-3.30/Modules/Compiler/GNU-C.cmake C$:/mingw64/share/cmake-3.30/Modules/Compiler/GNU-CXX.cmake C$:/mingw64/share/cmake-3.30/Modules/Compiler/GNU.cmake C$:/mingw64/share/cmake-3.30/Modules/FindOpenMP.cmake C$:/mingw64/share/cmake-3.30/Modules/FindPackageHandleStandardArgs.cmake C$:/mingw64/share/cmake-3.30/Modules/FindPackageMessage.cmake C$:/mingw64/share/cmake-3.30/Modules/Platform/Windows-GNU-C-ABI.cmake C$:/mingw64/share/cmake-3.30/Modules/Platform/Windows-GNU-C.cmake C$:/mingw64/share/cmake-3.30/Modules/Platform/Windows-GNU-CXX-ABI.cmake C$:/mingw64/share/cmake-3.30/Modules/Platform/Windows-GNU-CXX.cmake C$:/mingw64/share/cmake-3.30/Modules/Platform/Windows-GNU.cmake C$:/mingw64/share/cmake-3.30/Modules/Platform/Windows-Initialize.cmake C$:/mingw64/share/cmake-3.30/Modules/Platform/Windows-windres.cmake C$:/mingw64/share/cmake-3.30/Modules/Platform/Windows.cmake C$:/mingw64/share/cmake-3.30/Modules/Platform/WindowsPaths.cmake CMakeCache.txt CMakeFiles/3.30.2/CMakeCCompiler.cmake CMakeFiles/3.30.2/CMakeCXXCompiler.cmake CMakeFiles/3.30.2/CMakeRCCompiler.cmake CMakeFiles/3.30.2/CMakeSystem.cmake
   pool = console
 
 
 #############################################
 # A missing CMake input file is not an error.
 
-build C$:/Users/pvmod/InformationProcessingLab/02_ShapeOptimisation/08_GA_CPP/CMakeLists.txt C$:/mingw64/share/cmake-3.30/Modules/CMakeCInformation.cmake C$:/mingw64/share/cmake-3.30/Modules/CMakeCXXInformation.cmake C$:/mingw64/share/cmake-3.30/Modules/CMakeCommonLanguageInclude.cmake C$:/mingw64/share/cmake-3.30/Modules/CMakeGenericSystem.cmake C$:/mingw64/share/cmake-3.30/Modules/CMakeInitializeConfigs.cmake C$:/mingw64/share/cmake-3.30/Modules/CMakeLanguageInformation.cmake C$:/mingw64/share/cmake-3.30/Modules/CMakeRCInformation.cmake C$:/mingw64/share/cmake-3.30/Modules/CMakeSystemSpecificInformation.cmake C$:/mingw64/share/cmake-3.30/Modules/CMakeSystemSpecificInitialize.cmake C$:/mingw64/share/cmake-3.30/Modules/Compiler/CMakeCommonCompilerMacros.cmake C$:/mingw64/share/cmake-3.30/Modules/Compiler/GNU-C.cmake C$:/mingw64/share/cmake-3.30/Modules/Compiler/GNU-CXX.cmake C$:/mingw64/share/cmake-3.30/Modules/Compiler/GNU.cmake C$:/mingw64/share/cmake-3.30/Modules/Platform/Windows-GNU-C-ABI.cmake C$:/mingw64/share/cmake-3.30/Modules/Platform/Windows-GNU-C.cmake C$:/mingw64/share/cmake-3.30/Modules/Platform/Windows-GNU-CXX-ABI.cmake C$:/mingw64/share/cmake-3.30/Modules/Platform/Windows-GNU-CXX.cmake C$:/mingw64/share/cmake-3.30/Modules/Platform/Windows-GNU.cmake C$:/mingw64/share/cmake-3.30/Modules/Platform/Windows-Initialize.cmake C$:/mingw64/share/cmake-3.30/Modules/Platform/Windows-windres.cmake C$:/mingw64/share/cmake-3.30/Modules/Platform/Windows.cmake C$:/mingw64/share/cmake-3.30/Modules/Platform/WindowsPaths.cmake CMakeCache.txt CMakeFiles/3.30.2/CMakeCCompiler.cmake CMakeFiles/3.30.2/CMakeCXXCompiler.cmake CMakeFiles/3.30.2/CMakeRCCompiler.cmake CMakeFiles/3.30.2/CMakeSystem.cmake: phony
+build C$:/Users/pvmod/InformationProcessingLab/02_ShapeOptimisation/08_GA_CPP/CMakeLists.txt C$:/mingw64/share/cmake-3.30/Modules/CMakeCInformation.cmake C$:/mingw64/share/cmake-3.30/Modules/CMakeCXXInformation.cmake C$:/mingw64/share/cmake-3.30/Modules/CMakeCommonLanguageInclude.cmake C$:/mingw64/share/cmake-3.30/Modules/CMakeGenericSystem.cmake C$:/mingw64/share/cmake-3.30/Modules/CMakeInitializeConfigs.cmake C$:/mingw64/share/cmake-3.30/Modules/CMakeLanguageInformation.cmake C$:/mingw64/share/cmake-3.30/Modules/CMakeParseImplicitLinkInfo.cmake C$:/mingw64/share/cmake-3.30/Modules/CMakeRCInformation.cmake C$:/mingw64/share/cmake-3.30/Modules/CMakeSystemSpecificInformation.cmake C$:/mingw64/share/cmake-3.30/Modules/CMakeSystemSpecificInitialize.cmake C$:/mingw64/share/cmake-3.30/Modules/Compiler/CMakeCommonCompilerMacros.cmake C$:/mingw64/share/cmake-3.30/Modules/Compiler/GNU-C.cmake C$:/mingw64/share/cmake-3.30/Modules/Compiler/GNU-CXX.cmake C$:/mingw64/share/cmake-3.30/Modules/Compiler/GNU.cmake C$:/mingw64/share/cmake-3.30/Modules/FindOpenMP.cmake C$:/mingw64/share/cmake-3.30/Modules/FindPackageHandleStandardArgs.cmake C$:/mingw64/share/cmake-3.30/Modules/FindPackageMessage.cmake C$:/mingw64/share/cmake-3.30/Modules/Platform/Windows-GNU-C-ABI.cmake C$:/mingw64/share/cmake-3.30/Modules/Platform/Windows-GNU-C.cmake C$:/mingw64/share/cmake-3.30/Modules/Platform/Windows-GNU-CXX-ABI.cmake C$:/mingw64/share/cmake-3.30/Modules/Platform/Windows-GNU-CXX.cmake C$:/mingw64/share/cmake-3.30/Modules/Platform/Windows-GNU.cmake C$:/mingw64/share/cmake-3.30/Modules/Platform/Windows-Initialize.cmake C$:/mingw64/share/cmake-3.30/Modules/Platform/Windows-windres.cmake C$:/mingw64/share/cmake-3.30/Modules/Platform/Windows.cmake C$:/mingw64/share/cmake-3.30/Modules/Platform/WindowsPaths.cmake CMakeCache.txt CMakeFiles/3.30.2/CMakeCCompiler.cmake CMakeFiles/3.30.2/CMakeCXXCompiler.cmake CMakeFiles/3.30.2/CMakeRCCompiler.cmake CMakeFiles/3.30.2/CMakeSystem.cmake: phony
 
 
 #############################################
