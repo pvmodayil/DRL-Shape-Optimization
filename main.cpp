@@ -4,11 +4,13 @@
 #include <iostream>
 #include <vector>
 #include <chrono>
+#include <omp.h>
 
 // External Includes
 #include <Eigen/Dense>
 
 int main(){
+    omp_set_num_threads(4);
     // Read starting curve
     std::string filename = "../result_curve.csv";
     std::cout<< "Reading g point values from: " << filename << std::endl;
@@ -39,7 +41,7 @@ int main(){
     Eigen::ArrayXd g_array = Eigen::Map<const Eigen::ArrayXd>(g.data(), g.size(), 1); // Mx1
     
     // Genetic Algorithm class
-    GA::GeneticAlgorithm ga_problem = GA::GeneticAlgorithm(arrangement,g_array,x_array,100,600,0.1);
+    GA::GeneticAlgorithm ga_problem = GA::GeneticAlgorithm(arrangement,g_array,x_array,100,1000,0.1);
     double noise_scale = 0.1;
     
     // Start timing

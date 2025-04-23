@@ -192,15 +192,15 @@ namespace GA{
         // Create an initial population
         Eigen::MatrixXd population = initializePopulation(noise_scale); 
         Eigen::ArrayXd fitness_array = Eigen::ArrayXd(population_size);
-        Eigen::ArrayXd individual;
+        // Eigen::ArrayXd individual;
         // Iterate for num_generations steps
         for(size_t generation=0; generation<num_generations; ++generation){
             printProgressBar(num_generations, generation + 1);
 
             // Fitness calculation
-            // #pragma omp parallel for
-            for(size_t i=0; i<population_size; ++i){
-                individual = population.col(i).array();
+            #pragma omp parallel for
+            for(int i=0; i<population_size; ++i){
+                Eigen::ArrayXd individual = population.col(i).array();
                 fitness_array[i] = calculateFitness(individual);
             }
 
