@@ -91,41 +91,20 @@ namespace GA{
     // Selection operator
     // ------------------------------------------------------
     // Select the best and worst performers for Elitism implementation
-    std::vector<size_t> GeneticAlgorithm::selectElites(const Eigen::ArrayXd& fitness_array){
+    size_t GeneticAlgorithm::selectElites(const Eigen::ArrayXd& fitness_array){
         size_t n = fitness_array.size();
-        if (n < 4){
-            throw std::invalid_argument("Not enough individuals in population get at least 6!"); // Not enough elements
-        }
 
         // Initialise the indexes
-        size_t min1 = 0, min2 = 1, max1 = 0, max2 = 1;
+        size_t min = 0;
     
-        // Initialize min1, min2, max1, max2
-        if (fitness_array[1] < fitness_array[0]) {
-            std::swap(min1, min2);
-        } else {
-            std::swap(max1, max2);
-        }
-    
-        for (size_t i = 2; i < n; ++i) {
+        for (size_t i = 0; i < n; ++i) {
             // Update for minimum values
-            if (fitness_array[i] < fitness_array[min1]) {
-                min2 = min1;
-                min1 = i;
-            } else if (fitness_array[i] < fitness_array[min2]) {
-                min2 = i;
-            }
-    
-            // Update for maximum values
-            if (fitness_array[i] > fitness_array[max1]) {
-                max2 = max1;
-                max1 = i;
-            } else if (fitness_array[i] > fitness_array[max2]) {
-                max2 = i;
+            if (fitness_array[i] < fitness_array[min]) {
+                min = i;
             }
         }
     
-        return {min1, min2, max1, max2};
+        return min;
     }
 
     // Select the parents
@@ -229,9 +208,9 @@ namespace GA{
             population = reproduce(population, fitness_array, noise_scale);
         }
 
-        std::vector<size_t> elites_indices = selectElites(fitness_array);
-        std::cout << "\nBest Energy: " << fitness_array[elites_indices[0]] << "\n";
-        std::cout << "Best Curve: " << population.col(elites_indices[0]) << "\n";
+        size_t elites_index = selectElites(fitness_array);
+        std::cout << "\nBest Energy: " << fitness_array[elites_index] << "\n";
+        std::cout << "Best Curve: " << population.col(elites_index) << "\n";
     }
     
 

@@ -24,7 +24,7 @@ namespace GA{
             double calculateFitness(Eigen::ArrayXd& individual);
             
             // Parent selection  
-            std::vector<size_t> selectElites(const Eigen::ArrayXd& fitness_array);
+            size_t selectElites(const Eigen::ArrayXd& fitness_array);
             size_t selectParent(const Eigen::ArrayXd& fitness_array);
 
             // Reproduction
