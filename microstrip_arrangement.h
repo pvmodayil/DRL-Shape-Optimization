@@ -46,9 +46,9 @@ struct MicrostripArrangement {
         N(N){}
 };
 
-bool isMonotonicallyDecreasing(const std::vector<double>& g);
+bool isMonotonicallyDecreasing(Eigen::ArrayXd& g);
 
-bool isConvex(const std::vector<double>& g);
+bool isConvex(Eigen::ArrayXd& g);
 
 void filterVectors(const double& hw_micrstr, 
     const double& hw_arra, 
