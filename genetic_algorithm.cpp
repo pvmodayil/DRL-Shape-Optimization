@@ -158,9 +158,9 @@ namespace GA{
     Eigen::MatrixXd GeneticAlgorithm::reproduce(Eigen::MatrixXd& population, Eigen::ArrayXd& fitness_array, double& noise_scale){
         // Inits
         std::vector<size_t> selected_indices;
-        Eigen::VectorXd parent1;
-        Eigen::VectorXd parent2;
         size_t vector_size = starting_curveY.size();
+        Eigen::VectorXd parent1(vector_size);
+        Eigen::VectorXd parent2(vector_size);
 
         // Create a random noise scaled matrix for mutation
         Eigen::MatrixXd new_population(vector_size, population_size);
@@ -169,8 +169,8 @@ namespace GA{
             parent1 = population.col(selectParent(fitness_array));
             parent2 = population.col(selectParent(fitness_array));
             auto [child1, child2] = crossover(parent1,parent2); // Crossover + mutate
-            new_population.col(i) = child1;
-            new_population.col(i+1) = child2;
+            new_population.col(i).noalias() = child1;
+            new_population.col(i+1).noalias() = child2;
 
         }
 
