@@ -213,9 +213,8 @@ namespace GA{
         Eigen::ArrayXd individual;
         // Iterate for num_generations steps
         for(size_t generation=0; generation<num_generations; ++generation){
-            if (generation % (num_generations / 10) == 0 || generation == num_generations - 1) {
-                printProgressBar(num_generations, generation + 1);
-            }
+            printProgressBar(num_generations, generation + 1);
+            
             // Fitness calculation
             // #pragma omp parallel for
             for(size_t i=0; i<population_size; ++i){
