@@ -158,20 +158,19 @@ namespace GA{
         std::uniform_real_distribution<> dis(0.0, 1.0);
 
         // Generate a vector of random numbers
-        Eigen::VectorXd u = 0.5 * (Eigen::VectorXd::Random(parent_size).array() + 1.0);
+        Eigen::ArrayXd u = Eigen::ArrayXd::NullaryExpr(parent_size, [&dis, &gen]() { return dis(gen); });
 
         // Calculate beta
-        Eigen::VectorXd beta = u.array().unaryExpr([eta](double u) {
-            if (u <= 0.5) {
-                return std::pow(2.0 * u, 1.0 / (eta + 1.0));
-            } else {
-                return std::pow(1.0 / (2.0 * (1.0 - u)), 1.0 / (eta + 1.0));
-            }
-        });
+        Eigen::ArrayXd beta(u.size());
+        Eigen::Array<bool, Eigen::Dynamic, 1> mask = (u <= 0.5); // mask array
+        // Compute both cases for the mask
+        Eigen::ArrayXd beta_case_ulessthan  = (2.0 * u).pow(exponent);
+        Eigen::ArrayXd beta_case_umorethan = (1.0 / (2.0 * (1.0 - u))).pow(exponent);
+        beta = mask.select(beta_case_ulessthan, beta_case_umorethan);
 
         // Calculate children
-        Eigen::VectorXd child1 = 0.5 * ((1.0 + beta.array()) * parent1.array() + (1.0 - beta.array()) * parent2.array());
-        Eigen::VectorXd child2 = 0.5 * ((1.0 - beta.array()) * parent1.array() + (1.0 + beta.array()) * parent2.array());
+        Eigen::VectorXd child1 = 0.5 * ((1.0 + beta) * parent1.array() + (1.0 - beta) * parent2.array());
+        Eigen::VectorXd child2 = 0.5 * ((1.0 - beta) * parent1.array() + (1.0 + beta) * parent2.array());
 
         return std::make_tuple(child1, child2);
     }
