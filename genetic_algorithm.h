@@ -29,7 +29,7 @@ namespace GA{
 
             // Reproduction
             Eigen::MatrixXd reproduce(Eigen::MatrixXd& population, Eigen::ArrayXd& fitness_array, double& noise_scale);
-            std::tuple<Eigen::VectorXd, Eigen::VectorXd> crossover(Eigen::VectorXd& parent1, Eigen::VectorXd& parent2);
+            std::tuple<Eigen::VectorXd, Eigen::VectorXd> crossover(Eigen::VectorXd& parent1, Eigen::VectorXd& parent2, double eta=1.5);
             
         public:
             // Constructor

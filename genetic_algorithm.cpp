@@ -4,11 +4,8 @@
 #include <vector>
 #include <random>
 #include <tuple> // For std::tuple
-//#include <algorithm>
-//#include <numeric> // Include this header for std::iota
 #include <iostream>
 #include <stdexcept>
-//#include <omp.h>
 
 void printProgressBar(int total, int current) {
     const int bar_width = 20; // Width of the progress bar
@@ -151,17 +148,17 @@ namespace GA{
     }
 
     // Crossover
-    std::tuple<Eigen::VectorXd, Eigen::VectorXd> GeneticAlgorithm::crossover(Eigen::VectorXd& parent1, Eigen::VectorXd& parent2){
+    std::tuple<Eigen::VectorXd, Eigen::VectorXd> GeneticAlgorithm::crossover(Eigen::VectorXd& parent1, Eigen::VectorXd& parent2, double eta){
         
         size_t parent_size = parent1.size();
-        double eta = 1.5;
+        double exponent = 1.0 / (eta + 1.0);
         // Random distribution initialize
         std::random_device rd; // Random number from machine to put random seed
         std::mt19937 gen(rd());
         std::uniform_real_distribution<> dis(0.0, 1.0);
 
         // Generate a vector of random numbers
-        Eigen::VectorXd u = Eigen::VectorXd::NullaryExpr(parent_size, [&dis, &gen]() { return dis(gen); });
+        Eigen::VectorXd u = 0.5 * (Eigen::VectorXd::Random(parent_size).array() + 1.0);
 
         // Calculate beta
         Eigen::VectorXd beta = u.array().unaryExpr([eta](double u) {
