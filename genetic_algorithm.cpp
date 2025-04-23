@@ -50,8 +50,7 @@ namespace GA{
         size_t vector_size = starting_curveY.size();
         
         // Map the vector and create a matrix where each column is a copy of the starting curve
-        Eigen::ArrayXd column = Eigen::Map<const Eigen::ArrayXd>(starting_curveY.data(), vector_size, 1);
-        Eigen::MatrixXd initial_population = column.replicate(1, population_size);
+        Eigen::MatrixXd initial_population = starting_curveY.replicate(1, population_size);
         
         // Random uniform distribution between -1 to 1 scaled to 0 to 1 and further scaled to create random noise
         Eigen::MatrixXd random_noise = (
@@ -61,10 +60,10 @@ namespace GA{
         ).matrix();
 
         // Add noise to create the initial population
-        initial_population = initial_population + random_noise;
+        initial_population.noalias() += random_noise;
 
         // Limit the initial population within the boundary(V0)
-        initial_population = initial_population.array().min(arrangement.V0).matrix();
+        initial_population = initial_population.array().min(arrangement.V0).max(0).matrix();
 
         return initial_population;
     }
