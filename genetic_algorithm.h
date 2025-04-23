@@ -4,7 +4,7 @@
 #include <microstrip_arrangement.h>
 #include <vector>
 #include <tuple>
-
+#include <random>
 namespace GA{
     class GeneticAlgorithm {
         private:
@@ -16,6 +16,11 @@ namespace GA{
             int num_generations;
             double mutation_rate;
             MSA::MicrostripArrangement arrangement;
+
+            // Random device
+            std::mt19937 gen;
+            std::uniform_real_distribution<> real_dist;
+            std::uniform_int_distribution<> parent_index_dist;
             
             // Functions
             // ------------------------------------------------------

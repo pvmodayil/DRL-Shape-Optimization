@@ -38,7 +38,12 @@ namespace GA{
         starting_curveX(starting_curveX), 
         population_size(population_size), 
         num_generations(num_generations), 
-        mutation_rate(mutation_rate) {}
+        mutation_rate(mutation_rate) {
+            std::random_device rd;
+            gen = std::mt19937(rd());
+            real_dist = std::uniform_real_distribution<>(0.0, 1.0);
+            parent_index_dist = std::uniform_int_distribution<>(0, population_size - 1);
+        }
     
     // Initialize the population with random noise
     // ------------------------------------------------------
@@ -113,14 +118,9 @@ namespace GA{
         size_t candidate_index1;
         size_t candidate_index2;
 
-        // Random operator
-        std::random_device rd; // random number from machine to put random seed
-        std::mt19937 gen(rd());
-        std::uniform_int_distribution<> dis(0, population_size - 1);
-
         // Do tournament selection
-        candidate_index1 = dis(gen);
-        candidate_index2 = dis(gen);
+        candidate_index1 = parent_index_dist(gen);
+        candidate_index2 = parent_index_dist(gen);
 
         if (fitness_array[candidate_index2] < fitness_array[candidate_index1]) {
             std::swap(candidate_index1, candidate_index2);
@@ -134,13 +134,9 @@ namespace GA{
         
         size_t parent_size = parent1.size();
         double exponent = 1.0 / (eta + 1.0);
-        // Random distribution initialize
-        std::random_device rd; // Random number from machine to put random seed
-        std::mt19937 gen(rd());
-        std::uniform_real_distribution<> dis(0.0, 1.0);
 
         // Generate a vector of random numbers
-        Eigen::ArrayXd u = Eigen::ArrayXd::NullaryExpr(parent_size, [&dis, &gen]() { return dis(gen); });
+        Eigen::ArrayXd u = Eigen::ArrayXd::NullaryExpr(parent_size, [this]() { return real_dist(gen); }); // pass the class instance
 
         // Calculate beta
         Eigen::ArrayXd beta(u.size());
