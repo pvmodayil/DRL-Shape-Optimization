@@ -68,6 +68,9 @@ namespace GA{
     // Fitness operator
     // ------------------------------------------------------
     double GeneticAlgorithm::calculateFitness(Eigen::ArrayXd& individual){
+        if (!MSA::isMonotonicallyDecreasing(individual)){
+            return 100.0; // high energy value since necessary condition failed
+        }
         // Energy calculation
         Eigen::ArrayXd vn = MSA::calculatePotentialCoeffs(arrangement.V0,
             arrangement.hw_micrstr,
@@ -214,7 +217,7 @@ namespace GA{
         // Iterate for num_generations steps
         for(size_t generation=0; generation<num_generations; ++generation){
             printProgressBar(num_generations, generation + 1);
-            
+
             // Fitness calculation
             // #pragma omp parallel for
             for(size_t i=0; i<population_size; ++i){
