@@ -210,13 +210,16 @@ namespace GA{
         // Create an initial population
         Eigen::MatrixXd population = initializePopulation(noise_scale); 
         Eigen::ArrayXd fitness_array = Eigen::ArrayXd(population_size);
+        Eigen::ArrayXd individual;
         // Iterate for num_generations steps
-        for(size_t genration=0; genration<num_generations; ++genration){
-            printProgressBar(num_generations, genration+1);
+        for(size_t generation=0; generation<num_generations; ++generation){
+            if (generation % (num_generations / 10) == 0 || generation == num_generations - 1) {
+                printProgressBar(num_generations, generation + 1);
+            }
             // Fitness calculation
             // #pragma omp parallel for
             for(size_t i=0; i<population_size; ++i){
-                Eigen::ArrayXd individual = Eigen::Map<Eigen::ArrayXd>(population.col(i).data(), vector_size);
+                individual = population.col(i).array();
                 fitness_array[i] = calculateFitness(individual);
             }
 
