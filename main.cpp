@@ -47,11 +47,6 @@ int main(){
         arrangement.N,
         g_array,
         x_array);
-    
-    Eigen::ArrayXd VF = MSA::calculatePotential(arrangement.hw_arra,
-        arrangement.N,
-        vn,
-        data["g_ptsx"]);
 
     double energy = MSA::calculateEnergy(arrangement.er1,
         arrangement.er2,
@@ -85,11 +80,10 @@ int main(){
     std::chrono::duration<double, std::milli> duration = end - start;
 
     std::cout << "Execution time: " << duration.count()/1000 << " s" << std::endl;
-    
 
-    
-    
-    std::cout<<"Energy: "<<energy<<std::endl;
+    // Convert the result to a vector and save it to a CSV file
+    std::vector<double> result_vector(result.best_curve.data(), result.best_curve.data() + result.best_curve.size());
+    std::string output_filename = "../result_curve_optimized.csv";
     
     return 0;
 }
