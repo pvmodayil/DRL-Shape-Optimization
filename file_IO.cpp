@@ -68,4 +68,49 @@ std::unordered_map<std::string, std::vector<double>> readCSV(const std::string& 
     return data;
 }
 
+// Function to write a map of vector to a CSV file
+void writeCSV(const std::string& filename, const std::unordered_map<std::string, std::vector<double>>& data) {
+    std::ofstream file(filename);
+    if (!file.is_open()) {
+        std::cerr << "Failed to open file: " << filename << std::endl;
+        return;
+    }
+
+    // Write the header
+    bool first = true;
+    for (const auto& pair : data) {
+        if (!first) {
+            file << ",";
+        }
+        file << pair.first;
+        first = false;
+    }
+    file << "\n";
+
+    // Determine the maximum number of rows
+    size_t max_rows = 0;
+    for (const auto& pair : data) {
+        max_rows = std::max(max_rows, pair.second.size());
+    }
+
+    // Write the data row by row
+    for (size_t i = 0; i < max_rows; ++i) {
+        first = true;
+        for (const auto& pair : data) {
+            if (!first) {
+                file << ",";
+            }
+            if (i < pair.second.size()) {
+                file << pair.second[i];
+            } else {
+                file << ""; // Empty cell if no data
+            }
+            first = false;
+        }
+        file << "\n";
+    }
+
+    file.close();
+}
+
 } // fileio namespace

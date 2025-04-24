@@ -86,7 +86,8 @@ int main(){
     std::unordered_map<std::string, std::vector<double>> result_data;
     result_data["g_ptsx"] = data["g_ptsx"];
     result_data["g_ptsy"] = result_vector;
-    std::string output_filename = "../result_curve_optimized.csv";
+    std::string curve_output_filename = "../result_curve_optimized.csv";
+    fileio::writeCSV(curve_output_filename, result_data);
 
     std::unordered_map<std::string, std::vector<double>> energy_history;
     energy_history["energy"] = std::vector<double>(result.energy_convergence.data(), result.energy_convergence.data() + result.energy_convergence.size());
@@ -95,7 +96,10 @@ int main(){
         energy_history["generation"][i] = static_cast<double>(i);
     }
 
-    std::string output_filename = "../energy_history.csv";
-    
+    std::string history_output_filename = "../energy_history.csv";
+    fileio::writeCSV(history_output_filename, energy_history);
+
+    std::cout << "Energy history saved to: " << history_output_filename << std::endl;
+    std::cout << "Optimized curve saved to: " << curve_output_filename << std::endl;
     return 0;
 }

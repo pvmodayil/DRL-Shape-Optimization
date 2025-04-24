@@ -8,3 +8,6 @@
 28	4870	7672174805080892	CMakeFiles/microstrip_arrangement.dir/main.cpp.obj	139911a751c838b6
 33	5494	7672174805080892	CMakeFiles/microstrip_arrangement.dir/genetic_algorithm.cpp.obj	19deb83449fa2a38
 5495	5978	7672174859745357	microstrip_arrangement.exe	b6b6524aa5332ad8
+35	874	7672203931173570	CMakeFiles/microstrip_arrangement.dir/file_io.cpp.obj	ddbab73cbeb8fd22
+31	2069	7672203931144201	CMakeFiles/microstrip_arrangement.dir/main.cpp.obj	139911a751c838b6
+2069	2190	7672203951517729	microstrip_arrangement.exe	b6b6524aa5332ad8

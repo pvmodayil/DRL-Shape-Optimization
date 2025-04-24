@@ -16,6 +16,9 @@ std::vector<std::string> split(const std::string& str, char delimiter);
 // Function to read a CSV file and store each column as a vector
 std::unordered_map<std::string, std::vector<double>> readCSV(const std::string& filename);
 
+// Function to write a map of vector to a CSV file
+void writeCSV(const std::string& filename, const std::unordered_map<std::string, std::vector<double>>& data);
+
 } // namespace fileio
 
 #endif
