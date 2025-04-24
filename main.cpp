@@ -83,7 +83,19 @@ int main(){
 
     // Convert the result to a vector and save it to a CSV file
     std::vector<double> result_vector(result.best_curve.data(), result.best_curve.data() + result.best_curve.size());
+    std::unordered_map<std::string, std::vector<double>> result_data;
+    result_data["g_ptsx"] = data["g_ptsx"];
+    result_data["g_ptsy"] = result_vector;
     std::string output_filename = "../result_curve_optimized.csv";
+
+    std::unordered_map<std::string, std::vector<double>> energy_history;
+    energy_history["energy"] = std::vector<double>(result.energy_convergence.data(), result.energy_convergence.data() + result.energy_convergence.size());
+    energy_history["generation"] = std::vector<double>(num_generations + 1);
+    for (size_t i = 0; i < num_generations + 1; ++i) {
+        energy_history["generation"][i] = static_cast<double>(i);
+    }
+
+    std::string output_filename = "../energy_history.csv";
     
     return 0;
 }
