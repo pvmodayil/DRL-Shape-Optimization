@@ -136,9 +136,13 @@ namespace GA{
         double exponent = 1.0 / (eta + 1.0);
 
         // Generate a vector of random numbers
-        Eigen::ArrayXd u = Eigen::ArrayXd::NullaryExpr(parent_size, [this]() { return real_dist(gen); }); // pass the class instance
+        //Eigen::ArrayXd u = Eigen::ArrayXd::NullaryExpr(parent_size, [this]() { return real_dist(gen); }); // pass the class instance
+        Eigen::ArrayXd u = 0.5 * (Eigen::ArrayXd::Random(parent_size) + 1); // Random numbers between 0 and 1
 
-        // Calculate beta
+        // The following arithmetic has 1.0 - u in the denominator and hence it is important that u never has 1.0 as value
+        double epsilon = std::numeric_limits<double>::epsilon();
+        u = u.cwiseMax(epsilon).cwiseMin(1.0 - epsilon); // Ensure u is not 1.0 or 0.0
+
         Eigen::ArrayXd beta(u.size());
         Eigen::Array<bool, Eigen::Dynamic, 1> mask = (u <= 0.5); // mask array
         // Compute both cases for the mask
