@@ -18,8 +18,7 @@ namespace GA{
             MSA::MicrostripArrangement arrangement;
 
             // Random device
-            std::mt19937 gen;
-            std::uniform_real_distribution<> real_dist;
+            std::mt19937 rng;
             std::uniform_int_distribution<> parent_index_dist;
             
             // Functions
@@ -34,7 +33,11 @@ namespace GA{
 
             // Reproduction
             Eigen::MatrixXd reproduce(Eigen::MatrixXd& population, Eigen::ArrayXd& fitness_array, double& noise_scale);
-            std::tuple<Eigen::VectorXd, Eigen::VectorXd> crossover(Eigen::VectorXd& parent1, Eigen::VectorXd& parent2, double eta=1.5);
+            void crossover(Eigen::VectorXd& parent1, 
+                Eigen::VectorXd& parent2, 
+                Eigen::VectorXd& child1, 
+                Eigen::VectorXd& child2, 
+                double eta=1.5);
             
         public:
             // Constructor

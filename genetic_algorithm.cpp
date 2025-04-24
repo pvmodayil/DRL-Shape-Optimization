@@ -40,8 +40,7 @@ namespace GA{
         num_generations(num_generations), 
         mutation_rate(mutation_rate) {
             std::random_device rd;
-            gen = std::mt19937(rd());
-            real_dist = std::uniform_real_distribution<>(0.0, 1.0);
+            rng = std::mt19937(rd());
             parent_index_dist = std::uniform_int_distribution<>(0, population_size - 1);
         }
     
@@ -119,8 +118,8 @@ namespace GA{
         size_t candidate_index2;
 
         // Do tournament selection
-        candidate_index1 = parent_index_dist(gen);
-        candidate_index2 = parent_index_dist(gen);
+        candidate_index1 = parent_index_dist(rng);
+        candidate_index2 = parent_index_dist(rng);
 
         if (fitness_array[candidate_index2] < fitness_array[candidate_index1]) {
             std::swap(candidate_index1, candidate_index2);
@@ -130,7 +129,7 @@ namespace GA{
     }
 
     // Crossover
-    std::tuple<Eigen::VectorXd, Eigen::VectorXd> GeneticAlgorithm::crossover(Eigen::VectorXd& parent1, Eigen::VectorXd& parent2, double eta){
+    void GeneticAlgorithm::crossover(Eigen::VectorXd& parent1, Eigen::VectorXd& parent2, Eigen::VectorXd& child1, Eigen::VectorXd& child2, double eta){
         
         size_t parent_size = parent1.size();
         double exponent = 1.0 / (eta + 1.0);
@@ -151,10 +150,8 @@ namespace GA{
         beta = mask.select(beta_case_ulessthan, beta_case_umorethan);
 
         // Calculate children
-        Eigen::VectorXd child1 = 0.5 * ((1.0 + beta) * parent1.array() + (1.0 - beta) * parent2.array());
-        Eigen::VectorXd child2 = 0.5 * ((1.0 - beta) * parent1.array() + (1.0 + beta) * parent2.array());
-
-        return std::make_tuple(child1, child2);
+        child1 = 0.5 * ((1.0 + beta) * parent1.array() + (1.0 - beta) * parent2.array()).matrix();
+        child2 = 0.5 * ((1.0 - beta) * parent1.array() + (1.0 + beta) * parent2.array()).matrix();
     }
 
     // Reproduction operator
@@ -165,6 +162,8 @@ namespace GA{
         size_t vector_size = starting_curveY.size();
         Eigen::VectorXd parent1(vector_size);
         Eigen::VectorXd parent2(vector_size);
+        Eigen::VectorXd child1(vector_size);
+        Eigen::VectorXd child2(vector_size);
 
         // Create a random noise scaled matrix for mutation
         Eigen::MatrixXd new_population(vector_size, population_size);
@@ -172,7 +171,7 @@ namespace GA{
         for (size_t i=0; i<population_size; i+=2){
             parent1 = population.col(selectParent(fitness_array));
             parent2 = population.col(selectParent(fitness_array));
-            auto [child1, child2] = crossover(parent1,parent2); // Crossover + mutate
+            crossover(parent1,parent2,child1,child2); // Crossover + mutate
             new_population.col(i).noalias() = child1;
             new_population.col(i+1).noalias() = child2;
 
