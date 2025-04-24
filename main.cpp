@@ -40,24 +40,7 @@ int main(){
     Eigen::ArrayXd x_array = Eigen::Map<const Eigen::ArrayXd>(x.data(), x.size(), 1); // Mx1
     Eigen::ArrayXd g_array = Eigen::Map<const Eigen::ArrayXd>(g.data(), g.size(), 1); // Mx1
     
-    // Genetic Algorithm class
-    GA::GeneticAlgorithm ga_problem = GA::GeneticAlgorithm(arrangement,g_array,x_array,100,1000,0.1);
-    double noise_scale = 0.1;
-    
-    // Start timing
-    auto start = std::chrono::high_resolution_clock::now();
-    // Call the function you want to time
-    ga_problem.optimize(noise_scale);
-    // Stop timing
-    auto end = std::chrono::high_resolution_clock::now();
-
-    // Calculate the duration
-    std::chrono::duration<double, std::milli> duration = end - start;
-
-    std::cout << "Execution time: " << duration.count()/1000 << " s" << std::endl;
-    
-
-    // Energy calculation
+    // Initial energy calculation
     Eigen::ArrayXd vn = MSA::calculatePotentialCoeffs(arrangement.V0,
         arrangement.hw_micrstr,
         arrangement.hw_arra,
@@ -77,6 +60,34 @@ int main(){
         arrangement.ht_subs,
         arrangement.N,
         vn);
+
+    // Genetic Algorithm class
+    int population_size = 100; // Number of individuals in the population
+    int num_generations = 1000; // Number of generations to evolve
+    GA::GeneticAlgorithm ga_problem = GA::GeneticAlgorithm(arrangement,g_array,x_array,population_size,num_generations,0.1);
+    double noise_scale = 0.1;
+
+    // Result struct
+    GA::GeneticResult result = GA::GeneticResult(Eigen::ArrayXd(num_generations+1), Eigen::VectorXd(g.size() + 3), 0.0); // Empty initialization
+    result.energy_convergence(0) = energy; // Initial energy
+    
+    // Start timing
+    auto start = std::chrono::high_resolution_clock::now();
+    // Call the function you want to time
+    ga_problem.optimize(noise_scale, result);
+    // Stop timing
+    auto end = std::chrono::high_resolution_clock::now();
+    
+    std::cout << "Best energy: " << result.best_energy << "\n";
+    std::cout << "Best curve: " << result.best_curve << "\n";
+
+    // Calculate the duration
+    std::chrono::duration<double, std::milli> duration = end - start;
+
+    std::cout << "Execution time: " << duration.count()/1000 << " s" << std::endl;
+    
+
+    
     
     std::cout<<"Energy: "<<energy<<std::endl;
     
