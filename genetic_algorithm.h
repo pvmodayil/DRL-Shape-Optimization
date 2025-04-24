@@ -6,6 +6,17 @@
 #include <tuple>
 #include <random>
 namespace GA{
+    // Result struct
+    struct GeneticResult {
+        std::vector<double> energy_convergence;
+        Eigen::ArrayXd best_curve;
+        double best_energy;
+
+        GeneticResult(std::vector<double> energy_convergence, Eigen::ArrayXd best_curve, double best_energy)
+            : energy_convergence(energy_convergence), best_curve(best_curve), best_energy(best_energy) {}
+    };
+    
+    // Genetic Algorithm Class
     class GeneticAlgorithm {
         private:
             // GA Properties
