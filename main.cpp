@@ -10,7 +10,7 @@
 #include <Eigen/Dense>
 
 int main(){
-    omp_set_num_threads(4);
+    omp_set_num_threads(12);
     // Read starting curve
     std::string filename = "../result_curve.csv";
     std::cout<< "Reading g point values from: " << filename << std::endl;

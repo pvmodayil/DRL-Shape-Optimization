@@ -1,13 +1,13 @@
 # ninja log v6
 43	6853	7671178232124054	CMakeFiles/microstrip_arrangement.dir/microstrip_arrangement.cpp.obj	4aefd7c0beeecdad
 28	2464	7646012070830109	CMakeFiles/microstrip_arrangement.dir/file_IO.cpp.obj	f960ad5e44f8abb9
-2780	2896	7671870900871561	microstrip_arrangement.exe	b6b6524aa5332ad8
-32	1811	7671870873368944	CMakeFiles/microstrip_arrangement.dir/main.cpp.obj	139911a751c838b6
-34	844	7671126270237068	CMakeFiles/microstrip_arrangement.dir/file_io.cpp.obj	ddbab73cbeb8fd22
-37	2780	7671870873434914	CMakeFiles/microstrip_arrangement.dir/genetic_algorithm.cpp.obj	19deb83449fa2a38
-28	4870	7672174805080892	CMakeFiles/microstrip_arrangement.dir/main.cpp.obj	139911a751c838b6
-33	5494	7672174805080892	CMakeFiles/microstrip_arrangement.dir/genetic_algorithm.cpp.obj	19deb83449fa2a38
-5495	5978	7672174859745357	microstrip_arrangement.exe	b6b6524aa5332ad8
-35	874	7672203931173570	CMakeFiles/microstrip_arrangement.dir/file_io.cpp.obj	ddbab73cbeb8fd22
-31	2069	7672203931144201	CMakeFiles/microstrip_arrangement.dir/main.cpp.obj	139911a751c838b6
 2069	2190	7672203951517729	microstrip_arrangement.exe	b6b6524aa5332ad8
+31	2069	7672203931144201	CMakeFiles/microstrip_arrangement.dir/main.cpp.obj	139911a751c838b6
+35	874	7672203931173570	CMakeFiles/microstrip_arrangement.dir/file_io.cpp.obj	ddbab73cbeb8fd22
+33	5494	7672174805080892	CMakeFiles/microstrip_arrangement.dir/genetic_algorithm.cpp.obj	19deb83449fa2a38
+75	3198	7674613329143358	CMakeFiles/microstrip_arrangement.dir/file_IO.cpp.obj	7db4dc4ded738637
+70	4757	7674613329081228	CMakeFiles/microstrip_arrangement.dir/main.cpp.obj	139911a751c838b6
+78	5510	7674613329190115	CMakeFiles/microstrip_arrangement.dir/genetic_algorithm.cpp.obj	19deb83449fa2a38
+5510	6202	7674613383490771	microstrip_arrangement.exe	a5f7593fb8eae4e5
+44	1950	7674614106914610	CMakeFiles/microstrip_arrangement.dir/main.cpp.obj	139911a751c838b6
+1951	2069	7674614126011006	microstrip_arrangement.exe	a5f7593fb8eae4e5
