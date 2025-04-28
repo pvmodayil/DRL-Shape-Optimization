@@ -5,6 +5,7 @@
 #include <vector>
 #include <tuple>
 #include <random>
+#include <omp.h>
 namespace GA{
     // Result struct
     struct GeneticResult {
@@ -29,7 +30,8 @@ namespace GA{
             MSA::MicrostripArrangement arrangement;
 
             // Random device
-            std::mt19937 rng;
+            std::vector<std::mt19937> rng_engines; // Vector of random number generators for parallel processing for thread safety
+            //std::mt19937 rng;
             std::uniform_int_distribution<> parent_index_dist;
             
             // Functions
@@ -40,14 +42,14 @@ namespace GA{
             
             // Parent selection  
             size_t selectElites(const Eigen::ArrayXd& fitness_array);
-            size_t selectParent(const Eigen::ArrayXd& fitness_array);
+            size_t selectParent(const Eigen::ArrayXd& fitness_array, const int& thread_id);
 
             // Reproduction
             Eigen::MatrixXd reproduce(Eigen::MatrixXd& population, Eigen::ArrayXd& fitness_array, double& noise_scale);
             void crossover(Eigen::VectorXd& parent1, 
                 Eigen::VectorXd& parent2, 
-                Eigen::VectorXd& child1, 
-                Eigen::VectorXd& child2, 
+                Eigen::Ref<Eigen::VectorXd> child1, 
+                Eigen::Ref<Eigen::VectorXd> child2, 
                 double eta=1.5);
             
         public:
