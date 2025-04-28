@@ -10,7 +10,11 @@
 #include <Eigen/Dense>
 
 int main(){
-    omp_set_num_threads(12);
+    std::cout << "Genetic Algorithm Optimization" << std::endl;
+    std::cout << "------------------------------" << std::endl;
+    std::cout << "Using OpenMP with " << omp_get_max_threads() << " threads." << std::endl;
+    // Set the number of threads for OpenMP
+    omp_set_num_threads(omp_get_max_threads());
     // Read starting curve
     std::string filename = "../result_curve.csv";
     std::cout<< "Reading g point values from: " << filename << std::endl;
