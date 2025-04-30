@@ -15,9 +15,8 @@ To get started with this project, clone the repository and follow these steps:
 
 1. Clone this repository:
    ```bash
-   mkdir shape_optimisation
-   cd shape_optimisation
    git clone https://github.com/pvmodayil/DRL-Shape-Optimization.git
+   cd DRL-Shape-Optimization
    ```
 2. Build and run
     ```bash
