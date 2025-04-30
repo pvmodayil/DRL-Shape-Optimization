@@ -21,9 +21,11 @@ void printProgressBar(int total, int current) {
 }
 
 namespace GA{
-    // ------------------------------------------------------
-    // Constructor
-    // ------------------------------------------------------
+    /*
+    *******************************************************
+    *                      Constructor                    *
+    *******************************************************
+    */
     GeneticAlgorithm::GeneticAlgorithm(MSA::MicrostripArrangement& arrangement,
         Eigen::ArrayXd& starting_curveY,
         Eigen::ArrayXd& starting_curveX, 
@@ -51,9 +53,11 @@ namespace GA{
             parent_index_dist = std::uniform_int_distribution<>(0, population_size - 1);
         }
     
-    // ------------------------------------------------------
-    // Initialize the population with random noise
-    // ------------------------------------------------------
+    /*
+    *******************************************************
+    *               Initial Population                    *
+    *******************************************************
+    */
     Eigen::MatrixXd GeneticAlgorithm::initializePopulation(double& noise_scale){
         // Need the length for further processing
         size_t vector_size = starting_curveY.size();
@@ -77,9 +81,11 @@ namespace GA{
         return initial_population;
     }
 
-    // ------------------------------------------------------
-    // Fitness operator
-    // ------------------------------------------------------
+    /*
+    *******************************************************
+    *                 Fitness Operator                    *
+    *******************************************************
+    */
     double GeneticAlgorithm::calculateFitness(Eigen::ArrayXd& individual){
         if (!MSA::isMonotonicallyDecreasing(individual)){
             return 100.0; // high energy value since necessary condition failed
@@ -101,9 +107,11 @@ namespace GA{
             vn);
     }
     
-    // ------------------------------------------------------
-    // Parent selection operator
-    // ------------------------------------------------------
+    /*
+    *******************************************************
+    *                 Parent Selection                    *
+    *******************************************************
+    */
     size_t GeneticAlgorithm::selectParent(const Eigen::ArrayXd& fitness_array, const int& thread_id) {
         // Tournament selection with size 2
         size_t candidate_index1;
@@ -121,9 +129,11 @@ namespace GA{
         return candidate_index1;
     }
 
-    // ------------------------------------------------------
-    // Crossover (SBX Crossover)
-    // ------------------------------------------------------
+    /*
+    *******************************************************
+    *                    SBX Crossover                    *
+    *******************************************************
+    */
     void GeneticAlgorithm::crossover(Eigen::VectorXd& parent1, Eigen::VectorXd& parent2, Eigen::Ref<Eigen::VectorXd> child1, Eigen::Ref<Eigen::VectorXd> child2, double eta){
         
         size_t parent_size = parent1.size();
@@ -148,9 +158,11 @@ namespace GA{
         child2 = 0.5 * ((1.0 - beta) * parent1.array() + (1.0 + beta) * parent2.array()).matrix();
     }
 
-    // ------------------------------------------------------
-    // Reproduction operator
-    // ------------------------------------------------------
+    /*
+    *******************************************************
+    *                     Reproduction                    *
+    *******************************************************
+    */
     Eigen::MatrixXd GeneticAlgorithm::reproduce(Eigen::MatrixXd& population, Eigen::ArrayXd& fitness_array, double& noise_scale){
         // Inits
         size_t vector_size = starting_curveY.size();
@@ -175,9 +187,11 @@ namespace GA{
         return new_population;
     }
 
-    // ------------------------------------------------------
-    // Main function to run the optimization
-    // ------------------------------------------------------
+    /*
+    *******************************************************
+    *              Main Optimisation Function             *
+    *******************************************************
+    */
     void GeneticAlgorithm::optimize(double& noise_scale, GeneticResult& result){
         size_t best_index = 0;
         double best_energy = 0.0;
