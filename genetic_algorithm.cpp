@@ -1,14 +1,12 @@
 #include <genetic_algorithm.h>
 #include <microstrip_arrangement.h>
 #include <Eigen/Dense>
-#include <vector>
 #include <random>
-#include <tuple> // For std::tuple
 #include <iostream>
 #include <stdexcept>
 
 void printProgressBar(int total, int current) {
-    const int bar_width = 20; // Width of the progress bar
+    constexpr int bar_width = 20; // Width of the progress bar
     float progress = static_cast<float>(current) / total;
 
     std::cout << "[";
@@ -23,7 +21,7 @@ void printProgressBar(int total, int current) {
 }
 
 namespace GA{
-
+    // ------------------------------------------------------
     // Constructor
     // ------------------------------------------------------
     GeneticAlgorithm::GeneticAlgorithm(MSA::MicrostripArrangement& arrangement,
@@ -53,6 +51,7 @@ namespace GA{
             parent_index_dist = std::uniform_int_distribution<>(0, population_size - 1);
         }
     
+    // ------------------------------------------------------
     // Initialize the population with random noise
     // ------------------------------------------------------
     Eigen::MatrixXd GeneticAlgorithm::initializePopulation(double& noise_scale){
@@ -78,6 +77,7 @@ namespace GA{
         return initial_population;
     }
 
+    // ------------------------------------------------------
     // Fitness operator
     // ------------------------------------------------------
     double GeneticAlgorithm::calculateFitness(Eigen::ArrayXd& individual){
@@ -101,26 +101,9 @@ namespace GA{
             vn);
     }
     
-    // Selection operator
     // ------------------------------------------------------
-    // Select the best and worst performers for Elitism implementation
-    size_t GeneticAlgorithm::selectElites(const Eigen::ArrayXd& fitness_array){
-        size_t n = fitness_array.size();
-
-        // Initialise the indexes
-        size_t min = 0;
-    
-        for (size_t i = 0; i < n; ++i) {
-            // Update for minimum values
-            if (fitness_array[i] < fitness_array[min]) {
-                min = i;
-            }
-        }
-    
-        return min;
-    }
-
-    // Select the parents
+    // Parent selection operator
+    // ------------------------------------------------------
     size_t GeneticAlgorithm::selectParent(const Eigen::ArrayXd& fitness_array, const int& thread_id) {
         // Tournament selection with size 2
         size_t candidate_index1;
@@ -138,14 +121,15 @@ namespace GA{
         return candidate_index1;
     }
 
-    // Crossover
+    // ------------------------------------------------------
+    // Crossover (SBX Crossover)
+    // ------------------------------------------------------
     void GeneticAlgorithm::crossover(Eigen::VectorXd& parent1, Eigen::VectorXd& parent2, Eigen::Ref<Eigen::VectorXd> child1, Eigen::Ref<Eigen::VectorXd> child2, double eta){
         
         size_t parent_size = parent1.size();
         double exponent = 1.0 / (eta + 1.0);
 
         // Generate a vector of random numbers
-        //Eigen::ArrayXd u = Eigen::ArrayXd::NullaryExpr(parent_size, [this]() { return real_dist(gen); }); // pass the class instance
         Eigen::ArrayXd u = 0.5 * (Eigen::ArrayXd::Random(parent_size) + 1); // Random numbers between 0 and 1
 
         // The following arithmetic has 1.0 - u in the denominator and hence it is important that u never has 1.0 as value
@@ -164,16 +148,12 @@ namespace GA{
         child2 = 0.5 * ((1.0 - beta) * parent1.array() + (1.0 + beta) * parent2.array()).matrix();
     }
 
+    // ------------------------------------------------------
     // Reproduction operator
     // ------------------------------------------------------
     Eigen::MatrixXd GeneticAlgorithm::reproduce(Eigen::MatrixXd& population, Eigen::ArrayXd& fitness_array, double& noise_scale){
         // Inits
-        std::vector<size_t> selected_indices;
         size_t vector_size = starting_curveY.size();
-        // Eigen::VectorXd parent1(vector_size);
-        // Eigen::VectorXd parent2(vector_size);
-        // Eigen::VectorXd child1(vector_size);
-        // Eigen::VectorXd child2(vector_size);
 
         // Create a random noise scaled matrix for mutation
         Eigen::MatrixXd new_population(vector_size, population_size);
@@ -195,6 +175,7 @@ namespace GA{
         return new_population;
     }
 
+    // ------------------------------------------------------
     // Main function to run the optimization
     // ------------------------------------------------------
     void GeneticAlgorithm::optimize(double& noise_scale, GeneticResult& result){

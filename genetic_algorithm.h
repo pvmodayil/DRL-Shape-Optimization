@@ -2,8 +2,7 @@
 #define GENETIC_ALGORITHM_H
 
 #include <microstrip_arrangement.h>
-#include <vector>
-#include <tuple>
+#include <Eigen/Dense>
 #include <random>
 #include <omp.h>
 namespace GA{
