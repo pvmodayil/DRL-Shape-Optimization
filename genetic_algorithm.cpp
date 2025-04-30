@@ -39,8 +39,17 @@ namespace GA{
         population_size(population_size), 
         num_generations(num_generations), 
         mutation_rate(mutation_rate) {
-            std::random_device rd;
-            rng = std::mt19937(rd());
+            #pragma omp parallel
+            {
+                #pragma omp single
+                {
+                    rng_engines.resize(omp_get_num_threads());
+                }
+
+                int tid = omp_get_thread_num();
+                std::seed_seq seed{std::random_device{}(), static_cast<unsigned int>(tid)};
+                rng_engines[tid] = std::mt19937(seed);
+            }
             parent_index_dist = std::uniform_int_distribution<>(0, population_size - 1);
         }
     
@@ -112,12 +121,13 @@ namespace GA{
     }
 
     // Select the parents
-    size_t GeneticAlgorithm::selectParent(const Eigen::ArrayXd& fitness_array) {
+    size_t GeneticAlgorithm::selectParent(const Eigen::ArrayXd& fitness_array, const int& thread_id) {
         // Tournament selection with size 2
         size_t candidate_index1;
         size_t candidate_index2;
 
         // Do tournament selection
+        std::mt19937& rng = rng_engines[thread_id];
         candidate_index1 = parent_index_dist(rng);
         candidate_index2 = parent_index_dist(rng);
 
@@ -129,7 +139,7 @@ namespace GA{
     }
 
     // Crossover
-    void GeneticAlgorithm::crossover(Eigen::VectorXd& parent1, Eigen::VectorXd& parent2, Eigen::VectorXd& child1, Eigen::VectorXd& child2, double eta){
+    void GeneticAlgorithm::crossover(Eigen::VectorXd& parent1, Eigen::VectorXd& parent2, Eigen::Ref<Eigen::VectorXd> child1, Eigen::Ref<Eigen::VectorXd> child2, double eta){
         
         size_t parent_size = parent1.size();
         double exponent = 1.0 / (eta + 1.0);
@@ -160,20 +170,22 @@ namespace GA{
         // Inits
         std::vector<size_t> selected_indices;
         size_t vector_size = starting_curveY.size();
-        Eigen::VectorXd parent1(vector_size);
-        Eigen::VectorXd parent2(vector_size);
-        Eigen::VectorXd child1(vector_size);
-        Eigen::VectorXd child2(vector_size);
+        // Eigen::VectorXd parent1(vector_size);
+        // Eigen::VectorXd parent2(vector_size);
+        // Eigen::VectorXd child1(vector_size);
+        // Eigen::VectorXd child2(vector_size);
 
         // Create a random noise scaled matrix for mutation
         Eigen::MatrixXd new_population(vector_size, population_size);
         
-        for (size_t i=0; i<population_size; i+=2){
-            parent1 = population.col(selectParent(fitness_array));
-            parent2 = population.col(selectParent(fitness_array));
-            crossover(parent1,parent2,child1,child2); // Crossover + mutate
-            new_population.col(i).noalias() = child1;
-            new_population.col(i+1).noalias() = child2;
+        #pragma omp parallel for
+        for (int i=0; i<population_size; i+=2){
+            // Get the thread id for random number generation
+            int thread_id = omp_get_thread_num();
+            // Select the parents using tournament selection
+            Eigen::VectorXd parent1 = population.col(selectParent(fitness_array,thread_id));
+            Eigen::VectorXd parent2 = population.col(selectParent(fitness_array,thread_id));
+            crossover(parent1,parent2,new_population.col(i),new_population.col(i+1)); // Crossover + mutate
 
         }
 
