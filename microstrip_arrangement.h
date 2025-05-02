@@ -54,8 +54,8 @@ void filterVectors(const double& hw_micrstr,
     const double& hw_arra, 
     const std::vector<double> original_g, 
     const std::vector<double> original_x,
-    std::vector<double>& filtered_x,
-    std::vector<double>& filtered_g);
+    std::vector<double>& filtered_g,
+    std::vector<double>& filtered_x);
 Eigen::ArrayXd calculatePotentialCoeffs(const double& V0,
     const double& hw_micrstr, 
     const double& hw_arra, 
