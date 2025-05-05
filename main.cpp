@@ -12,16 +12,18 @@
 int main(){
     std::cout << "Genetic Algorithm Optimization" << std::endl;
     std::cout << "------------------------------" << std::endl;
+    
     std::cout << "Using OpenMP with " << omp_get_max_threads() << " threads." << std::endl;
     // Set the number of threads for OpenMP
     omp_set_num_threads(omp_get_max_threads());
-    // Read starting curve
+    
+    // Read starting curve cased D
     std::string filename = "../result_curve.csv";
     std::cout<< "Reading g point values from: " << filename << std::endl;
     std::unordered_map<std::string, std::vector<double>> data = fileio::readCSV(filename);
 
-    // Microstrip arrangement 
-    MSA::MicrostripArrangement arrangement = MSA::MicrostripArrangement(
+    // Microstrip arrangement TC2.1 Case D
+    MSA::MicrostripArrangement arrangementD = MSA::MicrostripArrangement(
         1.0, // V0
         0.05e-3, // d
         0.0, // t
@@ -35,9 +37,9 @@ int main(){
     std::vector<double> x = data["g_ptsx"];
     std::vector<double> g = data["g_ptsy"];
     // Filter the vectors if necessary
-    if(x[0] <= arrangement.hw_micrstr || x.back() >= arrangement.hw_arra){
+    if(x[0] <= arrangementD.hw_micrstr || x.back() >= arrangementD.hw_arra){
         // first pair of g,x are passed as value and the second is passed as reference so the original vectors itself will be filtered
-        MSA::filterVectors(arrangement.hw_micrstr,arrangement.hw_arra,g,x,g,x);
+        MSA::filterVectors(arrangementD.hw_micrstr,arrangementD.hw_arra,g,x,g,x);
     }
 
     // Convert the x and g vectors to Eigen arrays
@@ -45,25 +47,25 @@ int main(){
     Eigen::ArrayXd g_array = Eigen::Map<const Eigen::ArrayXd>(g.data(), g.size(), 1); // Mx1
     
     // Initial energy calculation
-    Eigen::ArrayXd vn = MSA::calculatePotentialCoeffs(arrangement.V0,
-        arrangement.hw_micrstr,
-        arrangement.hw_arra,
-        arrangement.N,
+    Eigen::ArrayXd vn = MSA::calculatePotentialCoeffs(arrangementD.V0,
+        arrangementD.hw_micrstr,
+        arrangementD.hw_arra,
+        arrangementD.N,
         g_array,
         x_array);
 
-    double init_energy = MSA::calculateEnergy(arrangement.er1,
-        arrangement.er2,
-        arrangement.hw_arra,
-        arrangement.ht_arra,
-        arrangement.ht_subs,
-        arrangement.N,
+    double init_energy = MSA::calculateEnergy(arrangementD.er1,
+        arrangementD.er2,
+        arrangementD.hw_arra,
+        arrangementD.ht_arra,
+        arrangementD.ht_subs,
+        arrangementD.N,
         vn);
 
     // Genetic Algorithm class
     int population_size = 100; // Number of individuals in the population
     int num_generations = 1000; // Number of generations to evolve
-    GA::GeneticAlgorithm ga_problem = GA::GeneticAlgorithm(arrangement,g_array,x_array,population_size,num_generations,0.1);
+    GA::GeneticAlgorithm ga_problem = GA::GeneticAlgorithm(arrangementD,g_array,x_array,population_size,num_generations,0.1);
     double noise_scale = 0.1;
 
     // Result struct
