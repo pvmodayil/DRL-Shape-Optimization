@@ -195,6 +195,7 @@ namespace GA{
     void GeneticAlgorithm::optimize(double& noise_scale, GeneticResult& result){
         size_t best_index = 0;
         double best_energy = 0.0;
+        double previous_energy = result.best_energy;
         size_t vector_size = starting_curveY.size();
         
         // Create an initial population
@@ -202,8 +203,8 @@ namespace GA{
         Eigen::ArrayXd fitness_array = Eigen::ArrayXd(population_size);
         
         // Iterate for num_generations steps
-        for(size_t generation=0; generation<num_generations; ++generation){
-            printProgressBar(num_generations, generation + 1);
+        for(size_t generation=1; generation<num_generations+1; ++generation){
+            printProgressBar(num_generations, generation);
 
             // Fitness calculation
             #pragma omp parallel for
@@ -213,8 +214,17 @@ namespace GA{
             }
 
             // Keep track
-            result.energy_convergence(generation + 1) = fitness_array.minCoeff(); // Store the best energy of the generation
+            best_energy = fitness_array.minCoeff(); // Get the best energy of the generation
+            result.energy_convergence(generation) = best_energy; // Store the best energy of the generation
             
+            if (generation%200 == 0){
+                // Check for convergence
+                if (std::abs(previous_energy - best_energy) < previous_energy*1e-3){
+                    std::cout << "Converged at generation " << generation << "\n";
+                    break;
+                }
+                previous_energy = best_energy; // Update the previous energy
+            }
             // Reproduce
             population = reproduce(population, fitness_array, noise_scale);
         }

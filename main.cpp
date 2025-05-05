@@ -52,7 +52,7 @@ int main(){
         g_array,
         x_array);
 
-    double energy = MSA::calculateEnergy(arrangement.er1,
+    double init_energy = MSA::calculateEnergy(arrangement.er1,
         arrangement.er2,
         arrangement.hw_arra,
         arrangement.ht_arra,
@@ -67,8 +67,8 @@ int main(){
     double noise_scale = 0.1;
 
     // Result struct
-    GA::GeneticResult result = GA::GeneticResult(Eigen::ArrayXd(num_generations+1), Eigen::VectorXd(g.size() + 3), 0.0); // Empty initialization
-    result.energy_convergence(0) = energy; // Initial energy
+    GA::GeneticResult result = GA::GeneticResult(Eigen::ArrayXd::Zero(num_generations+1), Eigen::VectorXd(g.size() + 3), init_energy); // Empty initialization
+    result.energy_convergence(0) = init_energy; // Initial energy
     
     // Start timing
     auto start = std::chrono::high_resolution_clock::now();
