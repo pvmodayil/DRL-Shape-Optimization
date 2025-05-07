@@ -17,7 +17,7 @@ constexpr double c0 = 2.99792458e8; // Speed of light in vacuum in m/s
 namespace MSA{
 /*
 *******************************************************
-*            Necessary Conditons Chheck               *
+*            Necessary Conditons Check               *
 *******************************************************
 */
 bool isMonotonicallyDecreasing(Eigen::ArrayXd& g){
