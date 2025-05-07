@@ -24,7 +24,7 @@ namespace MSA{
     void getBezierCurve(const Eigen::ArrayXd& action, 
         const double& hw_micrstr, 
         const double& hw_arra, 
-        int num_pts,
+        const int& num_pts,
         Eigen::ArrayXd& gptsX,
         Eigen::ArrayXd& gptsY) {
         
