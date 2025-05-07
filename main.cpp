@@ -42,6 +42,14 @@ int main(){
         MSA::filterVectors(arrangementD.hw_micrstr,arrangementD.hw_arra,g,x,g,x);
     }
 
+    Eigen::ArrayXd action = Eigen::ArrayXd::Zero(4);
+    Eigen::ArrayXd gptsX;
+    Eigen::ArrayXd gptsY;
+    MSA::getBezierCurve(action, arrangementD.hw_micrstr,arrangementD.hw_arra,30,gptsX,gptsY);
+
+    std::cout << "gptsX:\n" << gptsX;
+    std::cout << "\ngptsY:\n" << gptsY;
+    
     // Convert the x and g vectors to Eigen arrays
     Eigen::ArrayXd x_array = Eigen::Map<const Eigen::ArrayXd>(x.data(), x.size(), 1); // Mx1
     Eigen::ArrayXd g_array = Eigen::Map<const Eigen::ArrayXd>(g.data(), g.size(), 1); // Mx1
@@ -62,50 +70,50 @@ int main(){
         arrangementD.N,
         vn);
 
-    // Genetic Algorithm class
-    int population_size = 100; // Number of individuals in the population
-    int num_generations = 1000; // Number of generations to evolve
-    GA::GeneticAlgorithm ga_problem = GA::GeneticAlgorithm(arrangementD,g_array,x_array,population_size,num_generations,0.1);
-    double noise_scale = 0.1;
+    // // Genetic Algorithm class
+    // int population_size = 100; // Number of individuals in the population
+    // int num_generations = 1000; // Number of generations to evolve
+    // GA::GeneticAlgorithm ga_problem = GA::GeneticAlgorithm(arrangementD,g_array,x_array,population_size,num_generations,0.1);
+    // double noise_scale = 0.1;
 
-    // Result struct
-    GA::GeneticResult result = GA::GeneticResult(Eigen::ArrayXd::Zero(num_generations+1), Eigen::VectorXd(g.size() + 3), init_energy); // Empty initialization
-    result.energy_convergence(0) = init_energy; // Initial energy
+    // // Result struct
+    // GA::GeneticResult result = GA::GeneticResult(Eigen::ArrayXd::Zero(num_generations+1), Eigen::VectorXd(g.size() + 3), init_energy); // Empty initialization
+    // result.energy_convergence(0) = init_energy; // Initial energy
     
-    // Start timing
-    auto start = std::chrono::high_resolution_clock::now();
-    // Call the function you want to time
-    ga_problem.optimize(noise_scale, result);
-    // Stop timing
-    auto end = std::chrono::high_resolution_clock::now();
+    // // Start timing
+    // auto start = std::chrono::high_resolution_clock::now();
+    // // Call the function you want to time
+    // ga_problem.optimize(noise_scale, result);
+    // // Stop timing
+    // auto end = std::chrono::high_resolution_clock::now();
     
-    std::cout << "Best energy: " << result.best_energy << "\n";
-    std::cout << "Best curve: " << result.best_curve << "\n";
+    // std::cout << "Best energy: " << result.best_energy << "\n";
+    // std::cout << "Best curve: " << result.best_curve << "\n";
 
-    // Calculate the duration
-    std::chrono::duration<double, std::milli> duration = end - start;
+    // // Calculate the duration
+    // std::chrono::duration<double, std::milli> duration = end - start;
 
-    std::cout << "Execution time: " << duration.count()/1000 << " s" << std::endl;
+    // std::cout << "Execution time: " << duration.count()/1000 << " s" << std::endl;
 
-    // Convert the result to a vector and save it to a CSV file
-    std::vector<double> result_vector(result.best_curve.data(), result.best_curve.data() + result.best_curve.size());
-    std::unordered_map<std::string, std::vector<double>> result_data;
-    result_data["g_ptsx"] = data["g_ptsx"];
-    result_data["g_ptsy"] = result_vector;
-    std::string curve_output_filename = "../result_curve_optimized.csv";
-    fileio::writeCSV(curve_output_filename, result_data);
+    // // Convert the result to a vector and save it to a CSV file
+    // std::vector<double> result_vector(result.best_curve.data(), result.best_curve.data() + result.best_curve.size());
+    // std::unordered_map<std::string, std::vector<double>> result_data;
+    // result_data["g_ptsx"] = data["g_ptsx"];
+    // result_data["g_ptsy"] = result_vector;
+    // std::string curve_output_filename = "../result_curve_optimized.csv";
+    // fileio::writeCSV(curve_output_filename, result_data);
 
-    std::unordered_map<std::string, std::vector<double>> energy_history;
-    energy_history["energy"] = std::vector<double>(result.energy_convergence.data(), result.energy_convergence.data() + result.energy_convergence.size());
-    energy_history["generation"] = std::vector<double>(num_generations + 1);
-    for (size_t i = 0; i < num_generations + 1; ++i) {
-        energy_history["generation"][i] = static_cast<double>(i);
-    }
+    // std::unordered_map<std::string, std::vector<double>> energy_history;
+    // energy_history["energy"] = std::vector<double>(result.energy_convergence.data(), result.energy_convergence.data() + result.energy_convergence.size());
+    // energy_history["generation"] = std::vector<double>(num_generations + 1);
+    // for (size_t i = 0; i < num_generations + 1; ++i) {
+    //     energy_history["generation"][i] = static_cast<double>(i);
+    // }
 
-    std::string history_output_filename = "../energy_history.csv";
-    fileio::writeCSV(history_output_filename, energy_history);
+    // std::string history_output_filename = "../energy_history.csv";
+    // fileio::writeCSV(history_output_filename, energy_history);
 
-    std::cout << "Energy history saved to: " << history_output_filename << std::endl;
-    std::cout << "Optimized curve saved to: " << curve_output_filename << std::endl;
+    // std::cout << "Energy history saved to: " << history_output_filename << std::endl;
+    // std::cout << "Optimized curve saved to: " << curve_output_filename << std::endl;
     return 0;
 }
