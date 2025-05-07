@@ -16,7 +16,53 @@ constexpr double c0 = 2.99792458e8; // Speed of light in vacuum in m/s
 
 namespace MSA{
 
+    /*
+    *******************************************************
+    *            Bezier Curve Generator                   *
+    *******************************************************
+    */
+    void getBezierCurve(const Eigen::ArrayXd& action, 
+        const double& hw_micrstr, 
+        const double& hw_arra, 
+        int num_pts,
+        Eigen::ArrayXd& gptsX,
+        Eigen::ArrayXd& gptsY) {
+        
+        // Control points
+        Eigen::Vector2d P0(hw_micrstr, 1.0);
+        double p10 = hw_micrstr + (hw_arra - hw_micrstr) * action(0);
+        Eigen::Vector2d P1(p10, action(1));
+        double p20 = hw_micrstr + (hw_arra - hw_micrstr) * action(2);
+        Eigen::Vector2d P2(p20, action(3)); 
+        Eigen::Vector2d P3(hw_arra, 0.0);
+        // Stack the control points to do matrix multiplication
+        Eigen::MatrixXd control_points(4, 2);
+        control_points.row(0) = P0;
+        control_points.row(1) = P1;
+        control_points.row(2) = P2;
+        control_points.row(3) = P3;
+        
+        // Generate the bezier curve coefficients
+        Eigen::ArrayXd t = Eigen::ArrayXd::LinSpaced(num_pts, 0.0, 1.0); // 1xnum_pts
+        Eigen::VectorXd B0 = (1 - t).pow(3);
+        Eigen::VectorXd B1 = 3 * t * (1 - t).pow(2);
+        Eigen::VectorXd B2 = 3 * t.pow(2) * (1 - t);
+        Eigen::VectorXd B3 = t.pow(3);
+        
+        // Stack the coefficients to do matrix multiplication
+        Eigen::MatrixXd curve_coefficients(num_pts, 4);
+        curve_coefficients.col(0) = B0;
+        curve_coefficients.col(1) = B1;
+        curve_coefficients.col(2) = B2;
+        curve_coefficients.col(3) = B3;
 
+        // Calculate the curve points using matrix multiplication
+        Eigen::MatrixXd curve_points = curve_coefficients * control_points;
+
+        // Extract x and y coordinates
+        gptsX = curve_points.col(0).array();
+        gptsY = curve_points.col(1).array();
+    }
     /*
     *******************************************************
     *            Necessary Conditons Check               *
