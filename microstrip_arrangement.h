@@ -80,6 +80,13 @@ double calculateEnergy(const double& er1,
     const int& N,
     Eigen::ArrayXd& vn);
 
+void calculateImpedance(const double& V0, 
+    const double& WD, 
+    const double& WL, 
+    double& ZD, 
+    double& ZL,
+    double& epsilon_eff);    
+
 } // namespace MSA
 
 #endif

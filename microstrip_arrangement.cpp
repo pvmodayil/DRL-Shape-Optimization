@@ -12,6 +12,7 @@
 
 // Constants
 constexpr double PI = std::numbers::pi;
+constexpr double c0 = 2.99792458e8; // Speed of light in vacuum in m/s
 
 namespace MSA{
 /*
@@ -252,4 +253,19 @@ double calculateEnergy(const double& er1,
     return W12;
 }
 
+void calculateImpedance(const double& V0, 
+    const double& WD, 
+    const double& WL, 
+    double& ZD, 
+    double& ZL,
+    double& epsilon_eff){
+    // Calculate the impedance of the microstrip line
+    double CD = 2.0 * WD/(V0*V0); // Capacitance of the microstrip line case D
+    double CL = 2.0 * WL/(V0*V0); // Capacitance of the microstrip line case L
+
+    ZD = 1.0 / (c0 * std::sqrt(CD*CL)); // Impedance of the microstrip line case D
+    ZL = 1.0 / (c0 * CL); // Impedance of the microstrip line case L
+
+    epsilon_eff = CD / CL; // Effective permittivity of the microstrip line
+    }
 } // namespace MSA
