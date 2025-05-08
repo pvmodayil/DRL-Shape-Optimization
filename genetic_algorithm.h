@@ -1,7 +1,7 @@
 #ifndef GENETIC_ALGORITHM_H
 #define GENETIC_ALGORITHM_H
 
-#include <microstrip_arrangement.h>
+#include "microstrip_arrangement.h"
 #include <Eigen/Dense>
 #include <random>
 #include <omp.h>
