@@ -1,9 +1,9 @@
 #vs
-./vscode/
-./vs/
+.vscode/
+.vs/
 
 # Build directory
-./build/
+.build/
 
 # output
 ./result_curve_optimized.csv
