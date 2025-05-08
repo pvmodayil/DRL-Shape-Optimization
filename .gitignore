@@ -1,2 +1,11 @@
+#vs
+./vscode/
+./vs/
+
 # Build directory
-build/
+./build/
+
+# output
+./result_curve_optimized.csv
+./energy_history.csv
+./energy_history.xlsx
