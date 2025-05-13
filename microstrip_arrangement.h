@@ -46,6 +46,12 @@ struct MicrostripArrangement {
         N(N){}
 };
 
+void getBezierCurve(const Eigen::ArrayXd& action, 
+    const double& hw_micrstr, 
+    const double& hw_arra, 
+    const int& num_pts,
+    Eigen::ArrayXd& gptsX,
+    Eigen::ArrayXd& gptsY);
 bool isMonotonicallyDecreasing(Eigen::ArrayXd& g);
 
 bool isConvex(Eigen::ArrayXd& g);
