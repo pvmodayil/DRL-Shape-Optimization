@@ -14,7 +14,7 @@
 *            Shape Optimizer Function                 *
 *******************************************************
 */
-void optimizeShape(const double V0, 
+GA::GeneticResult optimizeShape(const double V0, 
         const double hw_micrstr, // Half-width of microstrip in meters 
         const double ht_micrstr, // Height of microstrip in meters 
         const double hw_arra, // Half-width of array in meters 
@@ -84,6 +84,8 @@ void optimizeShape(const double V0,
     // Calculate the duration
     std::chrono::duration<double, std::milli> duration = end - start;
     result.execution_time = duration.count(); // Convert to seconds
+
+    return result;
 }
 
 int main(){
