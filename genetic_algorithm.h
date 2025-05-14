@@ -11,9 +11,10 @@ namespace GA{
         Eigen::ArrayXd energy_convergence;
         Eigen::ArrayXd best_curve;
         double best_energy;
+        double execution_time;
 
-        GeneticResult(Eigen::ArrayXd energy_convergence, Eigen::VectorXd best_curve, double best_energy)
-            : energy_convergence(energy_convergence), best_curve(best_curve), best_energy(best_energy) {}
+        GeneticResult(Eigen::ArrayXd energy_convergence, Eigen::VectorXd best_curve, double best_energy, double execution_time=0.0)
+        : energy_convergence(energy_convergence), best_curve(best_curve), best_energy(best_energy), execution_time(execution_time) {}
     };
     
     // Genetic Algorithm Class
@@ -25,7 +26,6 @@ namespace GA{
             Eigen::ArrayXd starting_curveX;
             int population_size;
             int num_generations;
-            double mutation_rate;
             MSA::MicrostripArrangement arrangement;
 
             // Random device
@@ -57,8 +57,7 @@ namespace GA{
                 Eigen::ArrayXd& starting_curveY,
                 Eigen::ArrayXd& starting_curveX, 
                 int population_size, 
-                int num_generations, 
-                double mutation_rate);
+                int num_generations);
             
             // Main function to run the optimization
             void optimize(double& noise_scale, GeneticResult& result);

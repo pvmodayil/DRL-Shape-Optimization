@@ -9,103 +9,83 @@
 // External Includes
 #include <Eigen/Dense>
 
-int main(){
-    std::cout << "Genetic Algorithm Optimization" << std::endl;
-    std::cout << "------------------------------" << std::endl;
+/*
+*******************************************************
+*            Shape Optimizer Function                 *
+*******************************************************
+*/
+void optimizeShape(const double V0, 
+        const double hw_micrstr, // Half-width of microstrip in meters 
+        const double ht_micrstr, // Height of microstrip in meters 
+        const double hw_arra, // Half-width of array in meters 
+        const double ht_arra, // Height of array in meters 
+        const double ht_subs, // Height of substrate in meters 
+        const double er1, // Relative permittivity of air
+        const double er2, // Relative permittivity of substrate
+        const int N, // Number of Fourier coefficients
+        const int num_pts, // Number of points in the bezier curve
+        const Eigen::ArrayXd& action) { // Action vector
     
-    std::cout << "Using OpenMP with " << omp_get_max_threads() << " threads." << std::endl;
-    // Set the number of threads for OpenMP
-    omp_set_num_threads(omp_get_max_threads());
+    // Create the microstrip arrangement
+    //------------------------------------------------------
+    MSA::MicrostripArrangement arrangement(V0, hw_micrstr, ht_micrstr, hw_arra, ht_arra, ht_subs, er1, er2, N);
     
-    // Read starting curve cased D
-    std::string filename = "../result_curve.csv";
-    std::cout<< "Reading g point values from: " << filename << std::endl;
-    std::unordered_map<std::string, std::vector<double>> data = fileio::readCSV(filename);
-
-    // Microstrip arrangement TC2.1 Case D
-    MSA::MicrostripArrangement arrangementD = MSA::MicrostripArrangement(
-        1.0, // V0
-        0.05e-3, // d
-        0.0, // t
-        1.38e-3, // a
-        2.76e-3, // b
-        0.1382e-3,// c/h
-        1.0, // er1
-        12.9, // er2
-        2000); // N
-
-    std::vector<double> x = data["g_ptsx"];
-    std::vector<double> g = data["g_ptsy"];
-    // Filter the vectors if necessary
-    if(x[0] <= arrangementD.hw_micrstr || x.back() >= arrangementD.hw_arra){
-        // first pair of g,x are passed as value and the second is passed as reference so the original vectors itself will be filtered
-        MSA::filterVectors(arrangementD.hw_micrstr,arrangementD.hw_arra,g,x,g,x);
+    // Create the bezier curve
+    //------------------------------------------------------
+    Eigen::ArrayXd gptsX(num_pts);
+    Eigen::ArrayXd gptsY(num_pts);
+    MSA::getBezierCurve(action, hw_micrstr, hw_arra, num_pts, gptsX, gptsY);
+    // Check if the curve is monotonically decreasing
+    if (!MSA::isMonotonicallyDecreasing(gptsY)) {
+        throw std::runtime_error("The curve is not monotonically decreasing.");
+        return;
     }
 
-    // Convert the x and g vectors to Eigen arrays
-    Eigen::ArrayXd x_array = Eigen::Map<const Eigen::ArrayXd>(x.data(), x.size(), 1); // Mx1
-    Eigen::ArrayXd g_array = Eigen::Map<const Eigen::ArrayXd>(g.data(), g.size(), 1); // Mx1
-    
+    // Preprocess the curve points (the vn calculation takes the first and last points into account)
+    //------------------------------------------------------
+    Eigen::ArrayXd gptsX_filtered = gptsX.segment(1, num_pts - 2);
+    Eigen::ArrayXd gptsY_filtered = gptsY.segment(1, num_pts - 2);
+
     // Initial energy calculation
-    Eigen::ArrayXd vn = MSA::calculatePotentialCoeffs(arrangementD.V0,
-        arrangementD.hw_micrstr,
-        arrangementD.hw_arra,
-        arrangementD.N,
-        g_array,
-        x_array);
-
-    double init_energy = MSA::calculateEnergy(arrangementD.er1,
-        arrangementD.er2,
-        arrangementD.hw_arra,
-        arrangementD.ht_arra,
-        arrangementD.ht_subs,
-        arrangementD.N,
+    Eigen::ArrayXd vn = MSA::calculatePotentialCoeffs(arrangement.V0,
+        arrangement.hw_micrstr,
+        arrangement.hw_arra,
+        arrangement.N,
+        gptsY_filtered,
+        gptsX_filtered);
+    double init_energy = MSA::calculateEnergy(arrangement.er1,
+        arrangement.er2,
+        arrangement.hw_arra,
+        arrangement.ht_arra,
+        arrangement.ht_subs,
+        arrangement.N,
         vn);
-
+    
     // Genetic Algorithm class
+    //------------------------------------------------------
     int population_size = 100; // Number of individuals in the population
     int num_generations = 1000; // Number of generations to evolve
-    GA::GeneticAlgorithm ga_problem = GA::GeneticAlgorithm(arrangementD,g_array,x_array,population_size,num_generations,0.1);
-    double noise_scale = 0.1;
-
+    GA::GeneticAlgorithm ga_problem = GA::GeneticAlgorithm(arrangement,gptsY_filtered,gptsX_filtered,population_size,num_generations);
+    double noise_scale = 0.1;       
     // Result struct
-    GA::GeneticResult result = GA::GeneticResult(Eigen::ArrayXd::Zero(num_generations+1), Eigen::VectorXd(g.size() + 3), init_energy); // Empty initialization
+    double execution_time = 0.0;
+    GA::GeneticResult result = GA::GeneticResult(Eigen::ArrayXd::Zero(num_generations+1), 
+                                                Eigen::VectorXd(num_pts), 
+                                                init_energy,
+                                                execution_time); // Empty initialization
     result.energy_convergence(0) = init_energy; // Initial energy
     
-    // Start timing
+    // Optimize
+    //------------------------------------------------------
     auto start = std::chrono::high_resolution_clock::now();
-    // Call the function you want to time
     ga_problem.optimize(noise_scale, result);
-    // Stop timing
     auto end = std::chrono::high_resolution_clock::now();
-    
-    std::cout << "Best energy: " << result.best_energy << "\n";
-    std::cout << "Best curve: " << result.best_curve << "\n";
 
     // Calculate the duration
     std::chrono::duration<double, std::milli> duration = end - start;
+    result.execution_time = duration.count(); // Convert to seconds
+}
 
-    std::cout << "Execution time: " << duration.count()/1000 << " s" << std::endl;
-
-    // Convert the result to a vector and save it to a CSV file
-    std::vector<double> result_vector(result.best_curve.data(), result.best_curve.data() + result.best_curve.size());
-    std::unordered_map<std::string, std::vector<double>> result_data;
-    result_data["g_ptsx"] = data["g_ptsx"];
-    result_data["g_ptsy"] = result_vector;
-    std::string curve_output_filename = "../result_curve_optimized.csv";
-    fileio::writeCSV(curve_output_filename, result_data);
-
-    std::unordered_map<std::string, std::vector<double>> energy_history;
-    energy_history["energy"] = std::vector<double>(result.energy_convergence.data(), result.energy_convergence.data() + result.energy_convergence.size());
-    energy_history["generation"] = std::vector<double>(num_generations + 1);
-    for (size_t i = 0; i < num_generations + 1; ++i) {
-        energy_history["generation"][i] = static_cast<double>(i);
-    }
-
-    std::string history_output_filename = "../energy_history.csv";
-    fileio::writeCSV(history_output_filename, energy_history);
-
-    std::cout << "Energy history saved to: " << history_output_filename << std::endl;
-    std::cout << "Optimized curve saved to: " << curve_output_filename << std::endl;
+int main(){
     return 0;
 }

@@ -30,15 +30,13 @@ namespace GA{
         Eigen::ArrayXd& starting_curveY,
         Eigen::ArrayXd& starting_curveX, 
         int population_size, 
-        int num_generations, 
-        double mutation_rate)
+        int num_generations)
         : 
         arrangement(arrangement),
         starting_curveY(starting_curveY),
         starting_curveX(starting_curveX), 
         population_size(population_size), 
-        num_generations(num_generations), 
-        mutation_rate(mutation_rate) {
+        num_generations(num_generations) {
             #pragma omp parallel
             {
                 #pragma omp single
