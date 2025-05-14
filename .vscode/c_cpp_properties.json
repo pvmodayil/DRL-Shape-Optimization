@@ -3,7 +3,9 @@
         {
             "name": "Win32",
             "includePath": [
-                "${workspaceFolder}/**"
+                "${workspaceFolder}/**",
+                "${workspaceFolder}/extern/pybind11/include/**",
+                "C:/Users/pvmod/AppData/Local/Programs/Python/Python310/include"
             ],
             "defines": [
                 "_DEBUG",
